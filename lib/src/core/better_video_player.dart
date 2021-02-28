@@ -1,0 +1,212 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:better_video_player/src/configuration/better_video_data_source.dart';
+import 'package:better_video_player/src/configuration/better_video_data_source_type.dart';
+import 'package:better_video_player/src/core/better_video_player_with_controls.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
+import 'package:wakelock/wakelock.dart';
+
+import 'better_video_player_controller.dart';
+
+/// 播放器
+class BetterVideoPlayer extends StatelessWidget {
+  final BetterVideoPlayerController controller;
+
+  final BetterVideoPlayerDataSource dataSource;
+
+  final bool isFullScreen;
+
+  const BetterVideoPlayer({
+    Key key,
+    @required this.controller,
+    this.dataSource,
+    this.isFullScreen = false,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<BetterVideoPlayerController>(
+      create: (_) => controller,
+      child: _BetterVideoPlayer(
+        dataSource: dataSource,
+        isFullScreen: isFullScreen,
+      ),
+    );
+  }
+}
+
+class _BetterVideoPlayer extends StatefulWidget {
+  /// 数据源, 如果有数据源, 使用数据源创建播放控制器
+  final BetterVideoPlayerDataSource dataSource;
+
+  final bool isFullScreen;
+
+  const _BetterVideoPlayer({Key key, this.dataSource, @required this.isFullScreen})
+      : super(key: key);
+
+  @override
+  BetterVideoPlayerState createState() {
+    return BetterVideoPlayerState();
+  }
+}
+
+class BetterVideoPlayerState extends State<_BetterVideoPlayer>
+    with WidgetsBindingObserver {
+  VideoPlayerController videoPlayerController;
+
+  bool _dispose = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration.zero, () async {
+      if (widget.dataSource != null) {
+        // 初始化播放器
+        switch (widget.dataSource.type) {
+          case BetterVideoPlayerDataSourceType.network:
+            videoPlayerController =
+                VideoPlayerController.network(widget.dataSource.url);
+            break;
+
+          case BetterVideoPlayerDataSourceType.file:
+            videoPlayerController =
+                VideoPlayerController.file(File(widget.dataSource.url));
+            break;
+        }
+
+        // 创建后必须要初始化才能使用
+        await videoPlayerController.initialize();
+
+        // 绑定播放控制器
+        context
+            .read<BetterVideoPlayerController>()
+            .attachVideoPlayerController(videoPlayerController);
+      } else {
+        VideoPlayerController videoPlayerController =
+            context.read<BetterVideoPlayerController>().value.videoPlayerController;
+
+        if (videoPlayerController == null) {
+          throw Exception("没有找到播放器");
+        }
+
+        // 绑定播放控制器
+        context
+            .read<BetterVideoPlayerController>()
+            .attachVideoPlayerController(videoPlayerController);
+      }
+
+      // 绑定全屏事件
+      context.read<BetterVideoPlayerController>().value = context
+          .read<BetterVideoPlayerController>()
+          .value
+          .copyWith(enterFullScreenCallback: _onEnterFullScreen);
+      context.read<BetterVideoPlayerController>().value = context
+          .read<BetterVideoPlayerController>()
+          .value
+          .copyWith(exitFullScreenCallback: _onExitFullScreen);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = context.read<BetterVideoPlayerController>();
+    return VisibilityDetector(
+      key: UniqueKey(),
+      onVisibilityChanged: (VisibilityInfo info) {
+        // 这个框架在回调时有一个延迟, 目的是为了去重, 防止连续多次回调,
+        // 相同的key如果连续多次触发, 只会返回最后一次
+        // 如果不同的页面使用相同的Key, 同样也会去重
+        // 当dispose后会回调
+        if (!_dispose) {
+          controller.onPlayerVisibilityChanged(info.visibleFraction);
+        }
+      },
+      child: BetterVideoPlayerWithControls(
+        isFullScreen: widget.isFullScreen,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    videoPlayerController?.dispose();
+    _dispose = true;
+    super.dispose();
+  }
+
+  void _onEnterFullScreen() async {
+    await SystemChrome.setEnabledSystemUIOverlays([]);
+
+    final aspectRatio = context
+            .read<BetterVideoPlayerController>()
+            .value
+            ?.videoPlayerController
+            ?.value
+            ?.aspectRatio ??
+        1.0;
+    List<DeviceOrientation> deviceOrientations;
+    if (aspectRatio < 1.0) {
+      deviceOrientations = [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown
+      ];
+    } else {
+      deviceOrientations = [
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight
+      ];
+    }
+    await SystemChrome.setPreferredOrientations(deviceOrientations);
+
+    final controller = context.read<BetterVideoPlayerController>();
+
+    if (!controller.value.configuration.allowedScreenSleep) {
+      Wakelock.enable();
+    }
+
+    final fullScreenController = BetterVideoPlayerController.copy(controller);
+    var fullScreenConfiguration = fullScreenController.value.configuration;
+    final isPlaying =
+        fullScreenController.value.videoPlayerController.value.isPlaying;
+    fullScreenConfiguration =
+        fullScreenConfiguration.copyWith(autoPlay: isPlaying);
+    fullScreenController.value = fullScreenController.value
+        .copyWith(configuration: fullScreenConfiguration);
+
+    await Navigator.of(context, rootNavigator: true).push(
+      CupertinoPageRoute<BetterVideoPlayer>(builder: (BuildContext context) {
+        return BetterVideoPlayer(
+          controller: fullScreenController,
+          isFullScreen: true,
+        );
+      }),
+    );
+
+    // The wakelock plugins checks whether it needs to perform an action internally,
+    // so we do not need to check Wakelock.isEnabled.
+    Wakelock.disable();
+
+    await SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+
+    if (aspectRatio < 1.0) {
+    } else {
+      await SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+      await SystemChrome.setPreferredOrientations(const [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+    }
+  }
+
+  void _onExitFullScreen() async {
+    Navigator.pop(context);
+  }
+}
