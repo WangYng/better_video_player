@@ -45,7 +45,19 @@ class BetterVideoPlayerUtils {
 
   ///Latest value can be null
   static bool isLoading(VideoPlayerValue value) {
-    if (value == null || (!value.isPlaying && value.duration == null)) {
+    if (value == null) {
+      return true;
+    }
+
+    if (value.duration == null) {
+      return true;
+    }
+
+    if (value.isBuffering) {
+      return true;
+    }
+
+    if (!value.initialized) {
       return true;
     }
 

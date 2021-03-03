@@ -22,3 +22,4 @@ samples, guidance on mobile development, and a full API reference.
 - [x] placeholder
 - [x] fullscreen
 - [x] progress indicator
+- [x] tip when wifi interrupted

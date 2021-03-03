@@ -1,12 +1,16 @@
 PODS:
   - better_video_player (0.0.1):
     - Flutter
+  - connectivity (0.0.1):
+    - Flutter
+    - Reachability
   - Flutter (1.0.0)
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
   - path_provider (0.0.1):
     - Flutter
+  - Reachability (3.2)
   - sqflite (0.0.2):
     - Flutter
     - FMDB (>= 2.7.5)
@@ -17,6 +21,7 @@ PODS:
 
 DEPENDENCIES:
   - better_video_player (from `.symlinks/plugins/better_video_player/ios`)
+  - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - Flutter (from `Flutter`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
@@ -26,10 +31,13 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - FMDB
+    - Reachability
 
 EXTERNAL SOURCES:
   better_video_player:
     :path: ".symlinks/plugins/better_video_player/ios"
+  connectivity:
+    :path: ".symlinks/plugins/connectivity/ios"
   Flutter:
     :path: Flutter
   path_provider:
@@ -43,9 +51,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   better_video_player: c1f3d7f7a5d109b10e1b0e6947d32a2936f302fc
+  connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   video_player: 9cc823b1d9da7e8427ee591e8438bfbcde500e6e
   wakelock: bfc7955c418d0db797614075aabbc58a39ab5107

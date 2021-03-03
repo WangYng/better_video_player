@@ -48,7 +48,8 @@ class _BetterVideoPlayer extends StatefulWidget {
 
   final bool isFullScreen;
 
-  const _BetterVideoPlayer({Key key, this.dataSource, @required this.isFullScreen})
+  const _BetterVideoPlayer(
+      {Key key, this.dataSource, @required this.isFullScreen})
       : super(key: key);
 
   @override
@@ -82,16 +83,23 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
             break;
         }
 
-        // 创建后必须要初始化才能使用
-        await videoPlayerController.initialize();
+        try {
+          // 创建后必须要初始化才能使用
+          await videoPlayerController.initialize();
+        } catch (e) {
+          videoPlayerController.value =
+              videoPlayerController.value.copyWith(errorDescription: e.toString());
+        }
 
         // 绑定播放控制器
         context
             .read<BetterVideoPlayerController>()
             .attachVideoPlayerController(videoPlayerController);
       } else {
-        VideoPlayerController videoPlayerController =
-            context.read<BetterVideoPlayerController>().value.videoPlayerController;
+        VideoPlayerController videoPlayerController = context
+            .read<BetterVideoPlayerController>()
+            .value
+            .videoPlayerController;
 
         if (videoPlayerController == null) {
           throw Exception("没有找到播放器");
@@ -103,7 +111,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
             .attachVideoPlayerController(videoPlayerController);
       }
 
-      // 绑定全屏事件
+      // 绑定事件
       context.read<BetterVideoPlayerController>().value = context
           .read<BetterVideoPlayerController>()
           .value
@@ -159,10 +167,18 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
         DeviceOrientation.portraitDown
       ];
     } else {
-      deviceOrientations = [
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight
-      ];
+      if (Platform.isIOS) {
+        deviceOrientations = [DeviceOrientation.landscapeRight];
+      } else if (Platform.isAndroid) {
+        deviceOrientations = [
+          DeviceOrientation.landscapeLeft,
+        ];
+      } else {
+        deviceOrientations = [
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight
+        ];
+      }
     }
     await SystemChrome.setPreferredOrientations(deviceOrientations);
 
@@ -183,9 +199,13 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
 
     await Navigator.of(context, rootNavigator: true).push(
       CupertinoPageRoute<BetterVideoPlayer>(builder: (BuildContext context) {
-        return BetterVideoPlayer(
-          controller: fullScreenController,
-          isFullScreen: true,
+        return Scaffold(
+          body: SafeArea(
+            child: BetterVideoPlayer(
+              controller: fullScreenController,
+              isFullScreen: true,
+            ),
+          ),
         );
       }),
     );
@@ -198,7 +218,6 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
 
     if (aspectRatio < 1.0) {
     } else {
-      await SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
       await SystemChrome.setPreferredOrientations(const [
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,

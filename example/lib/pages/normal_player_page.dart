@@ -9,21 +9,6 @@ class NormalPlayerPage extends StatefulWidget {
 }
 
 class _NormalPlayerPageState extends State<NormalPlayerPage> {
-  BetterVideoPlayerController _BetterVideoPlayerController;
-
-  @override
-  void initState() {
-    _BetterVideoPlayerController = BetterVideoPlayerController.configuration(
-      BetterVideoPlayerConfiguration(
-        placeholder: CachedNetworkImage(
-          imageUrl: kTestVideoThumbnail,
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,10 +29,28 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
             AspectRatio(
               aspectRatio: 16.0 / 9.0,
               child: BetterVideoPlayer(
-                controller: _BetterVideoPlayerController,
+                controller: BetterVideoPlayerController.configuration(
+                  BetterVideoPlayerConfiguration(
+                    placeholder: CachedNetworkImage(
+                      imageUrl: kTestVideoThumbnail,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
                 dataSource: BetterVideoPlayerDataSource(
                   BetterVideoPlayerDataSourceType.network,
                   kTestVideoUrl,
+                ),
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height,
+              color: Colors.green,
+              margin: EdgeInsets.all(10),
+              child: Center(
+                child: Text(
+                  "g\nr\ne\ne\nn",
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
@@ -55,11 +58,5 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _BetterVideoPlayerController.dispose();
-    super.dispose();
   }
 }

@@ -30,40 +30,28 @@ class _VideoProgressBarState
     extends State<BetterVideoPlayerProgressBar> {
 
   VoidCallback listener;
-  bool _controllerWasPlaying = false;
 
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<BetterVideoPlayerController>();
     final videoPlayerValue = controller.value.videoPlayerController?.value;
+
     void seekToRelativePosition(Offset globalPosition) {
       final box = context.findRenderObject() as RenderBox;
       final Offset tapPos = box.globalToLocal(globalPosition);
       final double relative = tapPos.dx / box.size.width;
-      final Duration position = (videoPlayerValue?.duration ?? Duration.zero) * relative;
-      context.read<BetterVideoPlayerController>().seekTo(position);
+      context.read<BetterVideoPlayerController>().onProgressDragUpdate(relative);
     }
 
     return GestureDetector(
       onHorizontalDragStart: (DragStartDetails details) {
-        if (!(videoPlayerValue?.initialized ?? false)) {
-          return;
-        }
-
-        _controllerWasPlaying = videoPlayerValue?.isPlaying ?? false;
-        if (_controllerWasPlaying) {
-          context.read<BetterVideoPlayerController>().pause();
-        }
+        context.read<BetterVideoPlayerController>().onProgressDragStart();
 
         if (widget.onDragStart != null) {
           widget.onDragStart();
         }
       },
       onHorizontalDragUpdate: (DragUpdateDetails details) {
-        if (!(videoPlayerValue?.initialized ?? false)) {
-          return;
-        }
-
         seekToRelativePosition(details.globalPosition);
 
         if (widget.onDragUpdate != null) {
@@ -71,18 +59,13 @@ class _VideoProgressBarState
         }
       },
       onHorizontalDragEnd: (DragEndDetails details) {
-        if (_controllerWasPlaying) {
-          context.read<BetterVideoPlayerController>().play();
-        }
+        context.read<BetterVideoPlayerController>().onProgressDragEnd();
 
         if (widget.onDragEnd != null) {
           widget.onDragEnd();
         }
       },
       onTapDown: (TapDownDetails details) {
-        if (!(videoPlayerValue?.initialized ?? false)) {
-          return;
-        }
         seekToRelativePosition(details.globalPosition);
       },
       child: Center(

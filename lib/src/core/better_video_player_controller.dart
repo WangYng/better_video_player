@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:better_video_player/src/configuration/better_video_player_configuration.dart';
 import 'package:better_video_player/src/core/better_video_player_utils.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -17,13 +18,22 @@ class BetterVideoPlayerController
       BetterVideoPlayerController BetterVideoPlayerController)
       : super(BetterVideoPlayerController.value.copyWith());
 
+  StreamSubscription _connectivitySubscription;
+
   void attachVideoPlayerController(
       VideoPlayerController videoPlayerController) async {
     value = value.copyWith(videoPlayerController: videoPlayerController);
 
     videoPlayerController.addListener(_onVideoPlayerChanged);
-    await videoPlayerController.setLooping(value.configuration.looping);
 
+    if (videoPlayerController.value.hasError) {
+      return;
+    }
+
+    await start();
+  }
+
+  Future<void> start() async {
     // 开始自动播放
     if (value.configuration.autoPlay) {
       _wasPlayingBeforePause = true;
@@ -31,11 +41,27 @@ class BetterVideoPlayerController
         play();
       }
     }
+
+    await value.videoPlayerController.setLooping(value.configuration.looping);
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.wifi) {
+      _connectivitySubscription?.cancel();
+      _connectivitySubscription = Connectivity()
+          .onConnectivityChanged
+          .listen((ConnectivityResult result) {
+        if (result != ConnectivityResult.wifi) {
+          value = value.copyWith(wifiInterrupted: true);
+          if (value.videoPlayerController.value.isPlaying) {
+            pause();
+          }
+        }
+      });
+    }
   }
 
   void _onVideoPlayerChanged() async {
     if (value.visibilityFraction == 0) {
-      // 不在后台更新
       return;
     }
 
@@ -43,6 +69,10 @@ class BetterVideoPlayerController
       isLoading:
           BetterVideoPlayerUtils.isLoading(value.videoPlayerController.value),
     );
+
+    if (value.videoPlayerController.value.isPlaying) {
+      value = value.copyWith(isPauseFromUser: false);
+    }
 
     value = value.copyWith(
       isVideoFinish: BetterVideoPlayerUtils.isVideoFinished(
@@ -69,6 +99,43 @@ class BetterVideoPlayerController
   /// 播放
   Future<void> play() async {
     await value.videoPlayerController?.play();
+    if (value.wifiInterrupted) {
+      value = value.copyWith(wifiInterrupted: false);
+      _connectivitySubscription?.cancel();
+    }
+  }
+
+  /// 重启播放器
+  Future<void> restart() async {
+    if (value.videoPlayerController.value.hasError) {
+      // remove error
+      value.videoPlayerController.value = VideoPlayerValue(
+        duration: value.videoPlayerController.value.duration,
+        size: value.videoPlayerController.value.size,
+        position: value.videoPlayerController.value.position,
+        caption: value.videoPlayerController.value.caption,
+        buffered: value.videoPlayerController.value.buffered,
+        isPlaying: value.videoPlayerController.value.isPlaying,
+        isLooping: value.videoPlayerController.value.isLooping,
+        isBuffering: value.videoPlayerController.value.isBuffering,
+        volume: value.videoPlayerController.value.volume,
+        playbackSpeed: value.videoPlayerController.value.playbackSpeed,
+        errorDescription: null,
+      );
+
+      try {
+        await value.videoPlayerController.initialize();
+      } catch (e) {
+        value.videoPlayerController.value = value.videoPlayerController.value
+            .copyWith(errorDescription: e.toString());
+      }
+
+      if (value.videoPlayerController.value.hasError) {
+        return;
+      }
+
+      start();
+    }
   }
 
   /// 循环播放
@@ -83,7 +150,9 @@ class BetterVideoPlayerController
 
   /// 跳转
   Future<void> seekTo(Duration moment) async {
-    await value.videoPlayerController?.seekTo(moment);
+    if (value.videoPlayerController?.value?.duration != null) {
+      await value.videoPlayerController?.seekTo(moment);
+    }
   }
 
   /// 音量
@@ -108,12 +177,35 @@ class BetterVideoPlayerController
     }
   }
 
+  void onProgressDragStart() async {
+    _wasPlayingBeforePause =
+        value.videoPlayerController?.value?.isPlaying ?? false;
+    if (_wasPlayingBeforePause) {
+      await pause();
+    }
+  }
+
+  void onProgressDragUpdate(double relative) async {
+    final Duration position =
+        (value.videoPlayerController?.value?.duration ?? Duration.zero) *
+            relative;
+    await seekTo(position);
+  }
+
+  void onProgressDragEnd() async {
+    if (_wasPlayingBeforePause) {
+      await play();
+    }
+  }
+
   var _dispose = false;
+
   @override
   void dispose() {
     if (!_dispose) {
       _dispose = true;
       value.videoPlayerController?.removeListener(_onVideoPlayerChanged);
+      _connectivitySubscription?.cancel();
       super.dispose();
     }
   }
@@ -128,6 +220,9 @@ class BetterVideoPlayerValue {
 
   // 播放完成
   final bool isVideoFinish;
+
+  // wifi中断
+  final bool wifiInterrupted;
 
   // 当前播放器的配置
   final BetterVideoPlayerConfiguration configuration;
@@ -145,6 +240,7 @@ class BetterVideoPlayerValue {
     this.visibilityFraction = 1,
     this.isLoading = true,
     this.isVideoFinish = false,
+    this.wifiInterrupted = false,
     this.configuration = const BetterVideoPlayerConfiguration(),
     this.videoPlayerController,
     this.enterFullScreenCallback,
@@ -154,7 +250,9 @@ class BetterVideoPlayerValue {
   BetterVideoPlayerValue copyWith({
     double visibilityFraction,
     bool isLoading,
+    bool isPauseFromUser,
     bool isVideoFinish,
+    bool wifiInterrupted,
     BetterVideoPlayerConfiguration configuration,
     VideoPlayerController videoPlayerController,
     VoidCallback enterFullScreenCallback,
@@ -164,6 +262,7 @@ class BetterVideoPlayerValue {
       visibilityFraction: visibilityFraction ?? this.visibilityFraction,
       isLoading: isLoading ?? this.isLoading,
       isVideoFinish: isVideoFinish ?? this.isVideoFinish,
+      wifiInterrupted: wifiInterrupted ?? this.wifiInterrupted,
       configuration: configuration ?? this.configuration,
       videoPlayerController:
           videoPlayerController ?? this.videoPlayerController,

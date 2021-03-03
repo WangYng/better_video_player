@@ -10,8 +10,7 @@ import 'package:provider/provider.dart';
 class BetterVideoPlayerControls extends StatefulWidget {
   final bool isFullScreen;
 
-  const BetterVideoPlayerControls(
-      {Key key, @required this.isFullScreen})
+  const BetterVideoPlayerControls({Key key, @required this.isFullScreen})
       : super(key: key);
 
   @override
@@ -20,8 +19,7 @@ class BetterVideoPlayerControls extends StatefulWidget {
   }
 }
 
-class _BetterVideoPlayerControlsState
-    extends State<BetterVideoPlayerControls>
+class _BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
     with _HideStuff<BetterVideoPlayerControls> {
   @override
   void initState() {
@@ -35,6 +33,14 @@ class _BetterVideoPlayerControlsState
   Widget build(BuildContext context) {
     final controller = context.watch<BetterVideoPlayerController>();
 
+    final isPlaying =
+        controller.value?.videoPlayerController?.value?.isPlaying ?? false;
+    if (isPlaying && isAlwaysShow()) {
+      scheduleMicrotask(() => _show(duration: Duration(seconds: 3)));
+    } else if (!isPlaying && _isHide) {
+      scheduleMicrotask(() => _show());
+    }
+
     return GestureDetector(
       onTap: () {
         if (_isHide) {
@@ -47,13 +53,20 @@ class _BetterVideoPlayerControlsState
             absorbing: _isHide,
             child: Stack(
               children: [
-                if (controller.value.isLoading) // 加载中
-                  Center(child: buildLoading())
-                else
-                  const SizedBox(),
                 if (controller.value.videoPlayerController?.value?.hasError ??
                     false) // 发生错误
-                  buildError()
+                  buildError(_onRestart)
+                else if (controller.value.isLoading) // 加载中
+                  Center(child: buildLoading())
+                else if (controller.value.isVideoFinish &&
+                    !controller.value.configuration.looping) // 播放完成
+                  buildReplay(_onPlayPause)
+                else if (controller.value.wifiInterrupted) // wifi中断
+                  buildWifiInterrupted(_onPlayPause)
+                else if (!(controller
+                        .value.videoPlayerController?.value?.isPlaying ??
+                    false)) // 暂停
+                  buildCenterPause(_onPlayPause)
                 else
                   const SizedBox(),
                 buildBottomBar(),
@@ -111,12 +124,12 @@ class _BetterVideoPlayerControlsState
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
               colors: [
                 Colors.transparent,
                 Colors.black,
               ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
             ),
           ),
           child: Row(
@@ -140,7 +153,7 @@ class _BetterVideoPlayerControlsState
     );
   }
 
-  Widget buildError() {
+  Widget buildError(Function onTap) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -150,9 +163,17 @@ class _BetterVideoPlayerControlsState
             color: Colors.yellowAccent,
             size: 42,
           ),
-          Text(
-            "无法播放视频",
-            style: TextStyle(color: Colors.white),
+          CupertinoButton(
+            padding: EdgeInsets.zero,
+            onPressed: onTap,
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15.0),
+                color: Colors.black26,
+              ),
+              child: Text("restart", style: TextStyle(color: Colors.white)),
+            ),
           ),
         ],
       ),
@@ -200,6 +221,83 @@ class _BetterVideoPlayerControlsState
     );
   }
 
+  Widget buildWifiInterrupted(VoidCallback onTap) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CupertinoButton(
+            padding: EdgeInsets.zero,
+            onPressed: onTap,
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.black26,
+              ),
+              child: const Icon(
+                Icons.play_arrow,
+                color: Colors.white,
+                size: 60,
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 10),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5.0),
+              color: Colors.black87,
+            ),
+            child: Text(
+              "wifi interrupted",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildCenterPause(VoidCallback onTap) {
+    return Center(
+      child: CupertinoButton(
+        padding: EdgeInsets.zero,
+        onPressed: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.black26,
+          ),
+          child: const Icon(
+            Icons.play_arrow,
+            color: Colors.white,
+            size: 60,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildReplay(VoidCallback onTap) {
+    return Center(
+      child: CupertinoButton(
+        padding: EdgeInsets.zero,
+        onPressed: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.black26,
+          ),
+          child: const Icon(
+            Icons.cached_rounded,
+            color: Colors.white,
+            size: 60,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget buildProgress(Function onDragStart, Function onDragEnd) {
     return Container(
       constraints: BoxConstraints.expand(height: 44),
@@ -226,10 +324,11 @@ class _BetterVideoPlayerControlsState
 
     setState(() {
       if (controller.value?.videoPlayerController?.value?.isPlaying ?? false) {
-        _show();
+        controller.value = controller.value.copyWith(isPauseFromUser: true);
+
         controller.pause();
       } else {
-        _show(duration: Duration(seconds: 3));
+        controller.value = controller.value.copyWith(isPauseFromUser: false);
 
         if (controller.value?.videoPlayerController?.value?.initialized ??
             false) {
@@ -240,6 +339,11 @@ class _BetterVideoPlayerControlsState
         }
       }
     });
+  }
+
+  void _onRestart() {
+    final controller = context.read<BetterVideoPlayerController>();
+    controller.restart();
   }
 }
 
@@ -267,5 +371,9 @@ mixin _HideStuff<T extends StatefulWidget> on State<T> {
     setState(() {
       _isHide = true;
     });
+  }
+
+  bool isAlwaysShow() {
+    return !_isHide && !(_hideTimer?.isActive ?? false);
   }
 }

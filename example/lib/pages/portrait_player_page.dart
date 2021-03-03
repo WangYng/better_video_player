@@ -72,9 +72,9 @@ class _CustomVideoPlayerControlsState
         fit: StackFit.expand,
         children: [
           if (controller.value.videoPlayerController?.value?.hasError ??
-              false) // 发生错误
+              false)
             buildError()
-          else if (controller.value.isLoading) // 加载中
+          else if (controller.value.isLoading)
             Center(child: buildLoading())
           else if (!(controller.value.videoPlayerController?.value?.isPlaying ??
               false))
@@ -144,7 +144,6 @@ class _CustomVideoPlayerControlsState
   }
 
   void _onPlayPause() {
-    print("_onPlayPause");
     final controller = context.read<BetterVideoPlayerController>();
 
     setState(() {
