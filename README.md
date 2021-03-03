@@ -6,7 +6,7 @@ Advanced video player based on video_player.
 
 ```
 dependencies:
-  better_video_player: ^0.0.1
+  better_video_player: ^0.0.2
 ```
 
 This project is a starting point for a Flutter
