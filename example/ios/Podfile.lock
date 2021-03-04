@@ -1,5 +1,5 @@
 PODS:
-  - better_video_player (0.0.1):
+  - better_video_player (0.0.2):
     - Flutter
   - connectivity (0.0.1):
     - Flutter
@@ -50,7 +50,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/wakelock/ios"
 
 SPEC CHECKSUMS:
-  better_video_player: c1f3d7f7a5d109b10e1b0e6947d32a2936f302fc
+  better_video_player: e6b934d53919c77b9d069969813b6c9c2722ce49
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a

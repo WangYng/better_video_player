@@ -53,10 +53,6 @@ class BetterVideoPlayerUtils {
       return true;
     }
 
-    if (value.isBuffering) {
-      return true;
-    }
-
     if (!value.initialized) {
       return true;
     }
@@ -70,10 +66,8 @@ class BetterVideoPlayerUtils {
 
     if (position != null && bufferedEndPosition != null) {
       final difference = bufferedEndPosition - position;
-
-      if (value.isPlaying &&
-          value.isBuffering &&
-          difference.inMilliseconds < _bufferingInterval) {
+      
+      if (value.isPlaying && value.isBuffering) {
         return true;
       }
     }
