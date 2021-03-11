@@ -66,7 +66,7 @@ class BetterVideoPlayerUtils {
 
     if (position != null && bufferedEndPosition != null) {
       final difference = bufferedEndPosition - position;
-      
+
       if (value.isPlaying && value.isBuffering) {
         return true;
       }

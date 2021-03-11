@@ -2,21 +2,42 @@
 
 Advanced video player based on video_player.
 
-## Getting Started
+## Install Started
 
-```
+1. Add this to your **pubspec.yaml** file:
+
+```yaml
 dependencies:
-  better_video_player: ^0.0.2
+  better_video_player: ^0.0.3
 ```
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+2. Install it
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+$ flutter packages get
+```
+
+### Normal usage
+
+```dart
+AspectRatio(
+  aspectRatio: 16.0 / 9.0,
+  child: BetterVideoPlayer(
+    controller: BetterVideoPlayerController.configuration(
+      BetterVideoPlayerConfiguration(
+        placeholder: CachedNetworkImage(
+          imageUrl: kVideoThumbnail,
+          fit: BoxFit.cover,
+        ),
+      ),
+    ),
+    dataSource: BetterVideoPlayerDataSource(
+      BetterVideoPlayerDataSourceType.network,
+      kVideoUrl,
+    ),
+  ),
+)
+```
 
 ## Feature
 - [x] placeholder

@@ -11,6 +11,7 @@ class BetterVideoPlayerProgressBar extends StatefulWidget {
     this.onDragEnd,
     this.onDragStart,
     this.onDragUpdate,
+    this.height = 3,
     Key key,
   })  : colors = colors ?? BetterVideoPlayerProgressColors(),
         super(key: key);
@@ -19,6 +20,7 @@ class BetterVideoPlayerProgressBar extends StatefulWidget {
   final Function() onDragStart;
   final Function() onDragEnd;
   final Function() onDragUpdate;
+  final double height;
 
   @override
   _VideoProgressBarState createState() {
@@ -77,6 +79,7 @@ class _VideoProgressBarState
             painter: _ProgressBarPainter(
               videoPlayerValue,
               widget.colors,
+              widget.height,
             ),
           ),
         ),
@@ -86,10 +89,11 @@ class _VideoProgressBarState
 }
 
 class _ProgressBarPainter extends CustomPainter {
-  _ProgressBarPainter(this.value, this.colors);
+  _ProgressBarPainter(this.value, this.colors, this.height);
 
   VideoPlayerValue value;
   BetterVideoPlayerProgressColors colors;
+  double height;
 
   @override
   bool shouldRepaint(CustomPainter painter) {
@@ -98,7 +102,6 @@ class _ProgressBarPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    const height = 2.0;
 
     canvas.drawRRect(
       RRect.fromRectAndRadius(
@@ -143,8 +146,14 @@ class _ProgressBarPainter extends CustomPainter {
     );
     canvas.drawCircle(
       Offset(playedPart, size.height / 2 + height / 2),
-      height * 3,
+      height * 2,
       colors.handlePaint,
+    );
+
+    canvas.drawCircle(
+      Offset(playedPart, size.height / 2 + height / 2),
+      height*1.1,
+      colors.playedPaint,
     );
   }
 }

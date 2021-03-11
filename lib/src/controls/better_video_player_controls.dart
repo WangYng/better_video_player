@@ -15,18 +15,18 @@ class BetterVideoPlayerControls extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _BetterVideoPlayerControlsState();
+    return BetterVideoPlayerControlsState();
   }
 }
 
-class _BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
-    with _HideStuff<BetterVideoPlayerControls> {
+class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
+    with HideStuff<BetterVideoPlayerControls> {
   @override
   void initState() {
     super.initState();
 
     // 显示
-    _show(duration: Duration(seconds: 3));
+    show(duration: Duration(seconds: 3));
   }
 
   @override
@@ -36,15 +36,15 @@ class _BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
     final isPlaying =
         controller.value?.videoPlayerController?.value?.isPlaying ?? false;
     if (isPlaying && isAlwaysShow()) {
-      scheduleMicrotask(() => _show(duration: Duration(seconds: 3)));
+      scheduleMicrotask(() => show(duration: Duration(seconds: 3)));
     } else if (!isPlaying && _isHide) {
-      scheduleMicrotask(() => _show());
+      scheduleMicrotask(() => show());
     }
 
     return GestureDetector(
       onTap: () {
         if (_isHide) {
-          _show(duration: Duration(seconds: 3));
+          show(duration: Duration(seconds: 3));
         }
       },
       child: Stack(
@@ -137,8 +137,8 @@ class _BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
               buildPlayPause(_onPlayPause),
               Expanded(
                 child: buildProgress(
-                  _show,
-                  () => _show(duration: Duration(seconds: 3)),
+                  show,
+                  () => show(duration: Duration(seconds: 3)),
                 ),
               ),
               if (controller.value.videoPlayerController != null)
@@ -187,10 +187,15 @@ class _BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
       child: SizedBox(
         width: 44,
         height: 44,
-        child: const Icon(
-          Icons.fullscreen,
-          color: Colors.white,
-        ),
+        child: widget.isFullScreen
+            ? const Icon(
+                Icons.fullscreen_exit,
+                color: Colors.white,
+              )
+            : const Icon(
+                Icons.fullscreen,
+                color: Colors.white,
+              ),
       ),
     );
   }
@@ -300,9 +305,8 @@ class _BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
 
   Widget buildProgress(Function onDragStart, Function onDragEnd) {
     return Container(
-      constraints: BoxConstraints.expand(height: 44),
+      constraints: BoxConstraints.expand(height: 36),
       child: BetterVideoPlayerProgressWidget(
-        isFullScreen: widget.isFullScreen,
         onDragStart: onDragStart,
         onDragEnd: onDragEnd,
       ),
@@ -310,12 +314,12 @@ class _BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
   }
 
   void _onExpandCollapse() {
-    _hide();
+    hide();
     context.read<BetterVideoPlayerController>().enterFullScreen();
   }
 
   void _onReduceCollapse() {
-    _hide();
+    hide();
     context.read<BetterVideoPlayerController>().exitFullScreen();
   }
 
@@ -347,11 +351,11 @@ class _BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
   }
 }
 
-mixin _HideStuff<T extends StatefulWidget> on State<T> {
+mixin HideStuff<T extends StatefulWidget> on State<T> {
   bool _isHide = true;
   Timer _hideTimer;
 
-  void _show({Duration duration}) {
+  void show({Duration duration}) {
     _hideTimer?.cancel();
     if (duration != null) {
       _hideTimer = Timer(duration, () {
@@ -366,7 +370,7 @@ mixin _HideStuff<T extends StatefulWidget> on State<T> {
     });
   }
 
-  void _hide() {
+  void hide() {
     _hideTimer?.cancel();
     setState(() {
       _isHide = true;

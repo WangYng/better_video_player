@@ -14,14 +14,10 @@ class BetterVideoPlayerProgressWidget extends StatefulWidget {
   /// 拖动结束
   final Function onDragEnd;
 
-  /// 是否是全屏
-  final bool isFullScreen;
-
   const BetterVideoPlayerProgressWidget({
     Key key,
     @required this.onDragStart,
     @required this.onDragEnd,
-    @required this.isFullScreen,
   }) : super(key: key);
 
   @override
@@ -36,80 +32,52 @@ class BetterVideoPlayerProgressWidgetState
   Widget build(BuildContext context) {
     return Row(
       children: [
-        if (widget.isFullScreen)
-          _buildPosition()
-        else
-          _buildPositionAndDuration(),
-        Expanded(child: _buildProgressBar()),
-        if (widget.isFullScreen) _buildDuration() else const SizedBox(),
+        buildPosition(),
+        Expanded(child: buildProgressBar()),
+        buildDuration(),
       ],
     );
   }
 
-  Widget _buildPosition() {
+  Widget buildPosition() {
     final controller = context.watch<BetterVideoPlayerController>();
     final position = controller.value.videoPlayerController?.value?.position ??
         Duration.zero;
-    return Padding(
-      padding: const EdgeInsets.only(left: 24),
-      child: Text(
-        '${BetterVideoPlayerUtils.formatDuration(position)}',
-        style: TextStyle(
-          fontSize: 12,
-          color: Colors.white,
-          decoration: TextDecoration.none,
-        ),
+    return Text(
+      '${BetterVideoPlayerUtils.formatDuration(position)}',
+      style: TextStyle(
+        fontSize: 14,
+        color: Colors.white,
+        decoration: TextDecoration.none,
       ),
     );
   }
 
-  Widget _buildDuration() {
+  Widget buildDuration() {
     final controller = context.watch<BetterVideoPlayerController>();
-    final duration =
-        controller.value.videoPlayerController?.value?.duration ?? Duration.zero;
-    return Padding(
-      padding: const EdgeInsets.only(right: 24),
-      child: Text(
-        '${BetterVideoPlayerUtils.formatDuration(duration)}',
-        style: TextStyle(
-          fontSize: 12,
-          color: Colors.white,
-          decoration: TextDecoration.none,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPositionAndDuration() {
-    final controller = context.watch<BetterVideoPlayerController>();
-    final position = controller.value.videoPlayerController?.value?.position ??
-        Duration.zero;
     final duration = controller.value.videoPlayerController?.value?.duration ??
         Duration.zero;
-    return Padding(
-      padding: const EdgeInsets.only(),
-      child: Text(
-        '${BetterVideoPlayerUtils.formatDuration(position)}/${BetterVideoPlayerUtils.formatDuration(duration)}',
-        style: TextStyle(
-          fontSize: 12,
-          color: Colors.white,
-          decoration: TextDecoration.none,
-        ),
+    return Text(
+      '${BetterVideoPlayerUtils.formatDuration(duration)}',
+      style: TextStyle(
+        fontSize: 14,
+        color: Colors.white,
+        decoration: TextDecoration.none,
       ),
     );
   }
-
-  Widget _buildProgressBar() {
+  
+  Widget buildProgressBar() {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),
       child: BetterVideoPlayerProgressBar(
         onDragStart: widget.onDragStart,
         onDragEnd: widget.onDragEnd,
         colors: BetterVideoPlayerProgressColors(
-          playedColor: Colors.white,
+          playedColor: Color(0xFFFF671F),
           handleColor: Colors.white,
-          bufferedColor: Colors.white70,
-          backgroundColor: Colors.white60,
+          bufferedColor: Colors.white54,
+          backgroundColor: Colors.white38,
         ),
       ),
     );

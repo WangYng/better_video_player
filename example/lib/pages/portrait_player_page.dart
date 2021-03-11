@@ -136,7 +136,6 @@ class _CustomVideoPlayerControlsState
       ),
       constraints: BoxConstraints.expand(height: 44),
       child: BetterVideoPlayerProgressWidget(
-        isFullScreen: true,
         onDragStart: () => null,
         onDragEnd: () => null,
       ),
