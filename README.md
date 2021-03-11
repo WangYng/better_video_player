@@ -17,7 +17,7 @@ dependencies:
 $ flutter packages get
 ```
 
-### Normal usage
+## Normal usage
 
 ```dart
 AspectRatio(
