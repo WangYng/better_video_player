@@ -200,6 +200,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
     await Navigator.of(context, rootNavigator: true).push(
       CupertinoPageRoute<BetterVideoPlayer>(builder: (BuildContext context) {
         return Scaffold(
+          backgroundColor: Colors.black,
           body: SafeArea(
             child: BetterVideoPlayer(
               controller: fullScreenController,

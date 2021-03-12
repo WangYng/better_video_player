@@ -35,15 +35,17 @@ class _BetterVideoPlayerWithControlsState
             child: controller.value.configuration.placeholder,
           ),
           Center(
-            child: AspectRatio(
-              aspectRatio: BetterVideoPlayerUtils.aspectRatio(
-                      controller.value?.videoPlayerController?.value) ??
-                  (16.0 / 9.0),
-              child:
-                  controller.value.videoPlayerController?.value?.initialized ??
-                          false
-                      ? VideoPlayer(controller.value.videoPlayerController)
-                      : const SizedBox(),
+            child: ClipRRect(
+              child: AspectRatio(
+                aspectRatio: BetterVideoPlayerUtils.aspectRatio(
+                        controller.value?.videoPlayerController?.value) ??
+                    (16.0 / 9.0),
+                child:
+                    controller.value.videoPlayerController?.value?.initialized ??
+                            false
+                        ? VideoPlayer(controller.value.videoPlayerController)
+                        : const SizedBox(),
+              ),
             ),
           ),
           if (widget.isFullScreen)

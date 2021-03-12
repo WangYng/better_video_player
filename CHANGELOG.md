@@ -4,3 +4,5 @@ initial release.
 tip when wifi interrupted. fix bugs.
 ## 0.0.3
 add custom player page.
+## 0.0.4
+fix some bug.
