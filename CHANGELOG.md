@@ -6,3 +6,5 @@ tip when wifi interrupted. fix bugs.
 add custom player page.
 ## 0.0.4
 fix some bug.
+## 0.0.5
+auto play when resume

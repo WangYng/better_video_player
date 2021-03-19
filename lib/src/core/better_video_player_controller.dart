@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audio_session/audio_session.dart';
 import 'package:better_video_player/src/configuration/better_video_player_configuration.dart';
 import 'package:better_video_player/src/core/better_video_player_utils.dart';
 import 'package:connectivity/connectivity.dart';
@@ -15,8 +16,8 @@ class BetterVideoPlayerController
       : super(BetterVideoPlayerValue(configuration: betterPlayerConfiguration));
 
   BetterVideoPlayerController.copy(
-      BetterVideoPlayerController BetterVideoPlayerController)
-      : super(BetterVideoPlayerController.value.copyWith());
+      BetterVideoPlayerController betterVideoPlayerController)
+      : super(betterVideoPlayerController.value.copyWith());
 
   StreamSubscription _connectivitySubscription;
 
@@ -44,6 +45,7 @@ class BetterVideoPlayerController
 
     await value.videoPlayerController.setLooping(value.configuration.looping);
 
+    // 监听网络连接
     var connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.wifi) {
       _connectivitySubscription?.cancel();
@@ -98,10 +100,18 @@ class BetterVideoPlayerController
 
   /// 播放
   Future<void> play() async {
-    await value.videoPlayerController?.play();
-    if (value.wifiInterrupted) {
-      value = value.copyWith(wifiInterrupted: false);
-      _connectivitySubscription?.cancel();
+    if (value.videoPlayerController?.value?.isPlaying ?? false) {
+      return;
+    }
+    final session = await AudioSession.instance;
+    await session.configure(AudioSessionConfiguration.music());
+    if (await session.setActive(true)) {
+      await value.videoPlayerController?.play();
+
+      if (value.wifiInterrupted) {
+        value = value.copyWith(wifiInterrupted: false);
+        _connectivitySubscription?.cancel();
+      }
     }
   }
 
@@ -168,7 +178,7 @@ class BetterVideoPlayerController
         _wasPlayingBeforePause = value.videoPlayerController.value.isPlaying;
         await pause();
       } else {
-        if (_wasPlayingBeforePause) {
+        if (_wasPlayingBeforePause && value.configuration.autoPlayWhenResume) {
           await play();
         }
 

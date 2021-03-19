@@ -17,6 +17,7 @@ dependencies:
   video_player: ^1.0.1
   provider: ^4.0.1
   connectivity: ^2.0.2
+  audio_session: 0.0.11
 
 dev_dependencies:
   flutter_test:

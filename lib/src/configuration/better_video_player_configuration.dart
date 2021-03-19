@@ -14,6 +14,9 @@ class BetterVideoPlayerConfiguration {
   /// 屏幕休眠
   final bool allowedScreenSleep;
 
+  /// 返回自动恢复播放
+  final bool autoPlayWhenResume;
+
   /// 播放控制器
   final Widget controls;
 
@@ -25,6 +28,7 @@ class BetterVideoPlayerConfiguration {
     this.looping = false,
     this.placeholder = const SizedBox(),
     this.allowedScreenSleep = true,
+    this.autoPlayWhenResume = true,
     this.controls = const BetterVideoPlayerControls(isFullScreen: false),
     this.fullScreenControls =
         const BetterVideoPlayerControls(isFullScreen: true),
@@ -35,6 +39,7 @@ class BetterVideoPlayerConfiguration {
     bool looping,
     Widget placeholder,
     bool allowedScreenSleep,
+    bool autoPlayWhenResume,
     Widget controls,
     Widget fullScreenControls,
   }) {
@@ -43,6 +48,7 @@ class BetterVideoPlayerConfiguration {
       looping: looping ?? this.looping,
       placeholder: placeholder ?? this.placeholder,
       allowedScreenSleep: allowedScreenSleep ?? this.allowedScreenSleep,
+      autoPlayWhenResume: autoPlayWhenResume ?? this.autoPlayWhenResume,
       controls: controls ?? this.controls,
       fullScreenControls: fullScreenControls ?? this.fullScreenControls,
     );

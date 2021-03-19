@@ -87,8 +87,8 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
           // 创建后必须要初始化才能使用
           await videoPlayerController.initialize();
         } catch (e) {
-          videoPlayerController.value =
-              videoPlayerController.value.copyWith(errorDescription: e.toString());
+          videoPlayerController.value = videoPlayerController.value
+              .copyWith(errorDescription: e.toString());
         }
 
         // 绑定播放控制器
@@ -127,7 +127,8 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
   Widget build(BuildContext context) {
     final controller = context.read<BetterVideoPlayerController>();
     return VisibilityDetector(
-      key: UniqueKey(),
+      key: Key(widget.dataSource?.url ??
+          controller.value.videoPlayerController.dataSource),
       onVisibilityChanged: (VisibilityInfo info) {
         // 这个框架在回调时有一个延迟, 目的是为了去重, 防止连续多次回调,
         // 相同的key如果连续多次触发, 只会返回最后一次
