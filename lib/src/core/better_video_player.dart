@@ -112,11 +112,15 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
       }
 
       // 绑定事件
-      context.read<BetterVideoPlayerController>().value = context
+      context
+          .read<BetterVideoPlayerController>()
+          .value = context
           .read<BetterVideoPlayerController>()
           .value
           .copyWith(enterFullScreenCallback: _onEnterFullScreen);
-      context.read<BetterVideoPlayerController>().value = context
+      context
+          .read<BetterVideoPlayerController>()
+          .value = context
           .read<BetterVideoPlayerController>()
           .value
           .copyWith(exitFullScreenCallback: _onExitFullScreen);
@@ -126,9 +130,10 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
   @override
   Widget build(BuildContext context) {
     final controller = context.read<BetterVideoPlayerController>();
+    String url = widget.dataSource?.url ??
+        controller.value.videoPlayerController.dataSource;
     return VisibilityDetector(
-      key: Key(widget.dataSource?.url ??
-          controller.value.videoPlayerController.dataSource),
+      key: Key(url),
       onVisibilityChanged: (VisibilityInfo info) {
         // 这个框架在回调时有一个延迟, 目的是为了去重, 防止连续多次回调,
         // 相同的key如果连续多次触发, 只会返回最后一次
@@ -155,11 +160,11 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
     await SystemChrome.setEnabledSystemUIOverlays([]);
 
     final aspectRatio = context
-            .read<BetterVideoPlayerController>()
-            .value
-            ?.videoPlayerController
-            ?.value
-            ?.aspectRatio ??
+        .read<BetterVideoPlayerController>()
+        .value
+        ?.videoPlayerController
+        ?.value
+        ?.aspectRatio ??
         1.0;
     List<DeviceOrientation> deviceOrientations;
     if (aspectRatio < 1.0) {
@@ -218,8 +223,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
 
     await SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
 
-    if (aspectRatio < 1.0) {
-    } else {
+    if (aspectRatio < 1.0) {} else {
       await SystemChrome.setPreferredOrientations(const [
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,

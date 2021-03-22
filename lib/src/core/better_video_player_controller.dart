@@ -176,7 +176,9 @@ class BetterVideoPlayerController
     if (value.videoPlayerController != null) {
       if (visibilityFraction == 0) {
         _wasPlayingBeforePause = value.videoPlayerController.value.isPlaying;
-        await pause();
+        if (_wasPlayingBeforePause) {
+          await pause();
+        }
       } else {
         if (_wasPlayingBeforePause && value.configuration.autoPlayWhenResume) {
           await play();

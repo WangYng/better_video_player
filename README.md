@@ -8,7 +8,7 @@ Advanced video player based on video_player.
 
 ```yaml
 dependencies:
-  better_video_player: ^0.0.5
+  better_video_player: ^0.0.6
 ```
 
 2. Install it

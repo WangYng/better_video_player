@@ -8,3 +8,5 @@ add custom player page.
 fix some bug.
 ## 0.0.5
 auto play when resume
+## 0.0.6
+fix some bug.
