@@ -112,15 +112,11 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
       }
 
       // 绑定事件
-      context
-          .read<BetterVideoPlayerController>()
-          .value = context
+      context.read<BetterVideoPlayerController>().value = context
           .read<BetterVideoPlayerController>()
           .value
           .copyWith(enterFullScreenCallback: _onEnterFullScreen);
-      context
-          .read<BetterVideoPlayerController>()
-          .value = context
+      context.read<BetterVideoPlayerController>().value = context
           .read<BetterVideoPlayerController>()
           .value
           .copyWith(exitFullScreenCallback: _onExitFullScreen);
@@ -160,11 +156,11 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
     await SystemChrome.setEnabledSystemUIOverlays([]);
 
     final aspectRatio = context
-        .read<BetterVideoPlayerController>()
-        .value
-        ?.videoPlayerController
-        ?.value
-        ?.aspectRatio ??
+            .read<BetterVideoPlayerController>()
+            .value
+            ?.videoPlayerController
+            ?.value
+            ?.aspectRatio ??
         1.0;
     List<DeviceOrientation> deviceOrientations;
     if (aspectRatio < 1.0) {
@@ -190,8 +186,12 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
 
     final controller = context.read<BetterVideoPlayerController>();
 
-    if (!controller.value.configuration.allowedScreenSleep) {
-      Wakelock.enable();
+    // 屏幕常亮
+    bool closeWakelock = false;
+    if (!controller.value.configuration.allowedScreenSleep &&
+        !(await Wakelock.enabled)) {
+      await Wakelock.enable();
+      closeWakelock = true;
     }
 
     final fullScreenController = BetterVideoPlayerController.copy(controller);
@@ -217,13 +217,14 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
       }),
     );
 
-    // The wakelock plugins checks whether it needs to perform an action internally,
-    // so we do not need to check Wakelock.isEnabled.
-    Wakelock.disable();
+    if (closeWakelock) {
+      await Wakelock.disable();
+    }
 
     await SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
 
-    if (aspectRatio < 1.0) {} else {
+    if (aspectRatio < 1.0) {
+    } else {
       await SystemChrome.setPreferredOrientations(const [
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,

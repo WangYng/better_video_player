@@ -10,3 +10,5 @@ fix some bug.
 auto play when resume
 ## 0.0.6
 fix some bug.
+## 0.0.7
+fix some bug.

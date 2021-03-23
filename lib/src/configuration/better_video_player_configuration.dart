@@ -27,7 +27,7 @@ class BetterVideoPlayerConfiguration {
     this.autoPlay = true,
     this.looping = false,
     this.placeholder = const SizedBox(),
-    this.allowedScreenSleep = true,
+    this.allowedScreenSleep = false,
     this.autoPlayWhenResume = true,
     this.controls = const BetterVideoPlayerControls(isFullScreen: false),
     this.fullScreenControls =
