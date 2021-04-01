@@ -2,6 +2,8 @@
 
 Advanced video player based on video_player.
 
+<img src="doc/example.gif" border="0" />
+
 ## Install Started
 
 1. Add this to your **pubspec.yaml** file:
