@@ -1,25 +1,25 @@
 import 'package:better_video_player/src/controls/progress/better_video_player_progress_colors.dart';
 import 'package:better_video_player/src/core/better_video_player_controller.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 
 class BetterVideoPlayerProgressBar extends StatefulWidget {
   BetterVideoPlayerProgressBar({
-    BetterVideoPlayerProgressColors colors,
-    this.onDragEnd,
-    this.onDragStart,
+    BetterVideoPlayerProgressColors? colors,
+    required this.onDragEnd,
+    required this.onDragStart,
     this.onDragUpdate,
     this.height = 3,
-    Key key,
+    Key? key,
   })  : colors = colors ?? BetterVideoPlayerProgressColors(),
         super(key: key);
 
   final BetterVideoPlayerProgressColors colors;
-  final Function() onDragStart;
-  final Function() onDragEnd;
-  final Function() onDragUpdate;
+  final Function onDragStart;
+  final Function onDragEnd;
+  final Function? onDragUpdate;
   final double height;
 
   @override
@@ -28,10 +28,8 @@ class BetterVideoPlayerProgressBar extends StatefulWidget {
   }
 }
 
-class _VideoProgressBarState
-    extends State<BetterVideoPlayerProgressBar> {
-
-  VoidCallback listener;
+class _VideoProgressBarState extends State<BetterVideoPlayerProgressBar> {
+  VoidCallback? listener;
 
   @override
   Widget build(BuildContext context) {
@@ -49,23 +47,19 @@ class _VideoProgressBarState
       onHorizontalDragStart: (DragStartDetails details) {
         context.read<BetterVideoPlayerController>().onProgressDragStart();
 
-        if (widget.onDragStart != null) {
-          widget.onDragStart();
-        }
+        widget.onDragStart();
       },
       onHorizontalDragUpdate: (DragUpdateDetails details) {
         seekToRelativePosition(details.globalPosition);
 
         if (widget.onDragUpdate != null) {
-          widget.onDragUpdate();
+          widget.onDragUpdate!();
         }
       },
       onHorizontalDragEnd: (DragEndDetails details) {
         context.read<BetterVideoPlayerController>().onProgressDragEnd();
 
-        if (widget.onDragEnd != null) {
-          widget.onDragEnd();
-        }
+        widget.onDragEnd();
       },
       onTapDown: (TapDownDetails details) {
         seekToRelativePosition(details.globalPosition);
@@ -91,7 +85,7 @@ class _VideoProgressBarState
 class _ProgressBarPainter extends CustomPainter {
   _ProgressBarPainter(this.value, this.colors, this.height);
 
-  VideoPlayerValue value;
+  VideoPlayerValue? value;
   BetterVideoPlayerProgressColors colors;
   double height;
 
@@ -102,7 +96,6 @@ class _ProgressBarPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromPoints(
@@ -113,13 +106,12 @@ class _ProgressBarPainter extends CustomPainter {
       ),
       colors.backgroundPaint,
     );
-    if (!(value?.initialized ?? false)) {
+    if (!(value?.isInitialized ?? false)) {
       return;
     }
     final double playedPartPercent =
         (value?.position ?? Duration.zero).inMilliseconds / (value?.duration ?? Duration.zero).inMilliseconds;
-    final double playedPart =
-        playedPartPercent > 1 ? size.width : playedPartPercent * size.width;
+    final double playedPart = playedPartPercent > 1 ? size.width : playedPartPercent * size.width;
     for (final DurationRange range in (value?.buffered ?? [])) {
       final double start = range.startFraction(value?.duration ?? Duration.zero) * size.width;
       final double end = range.endFraction(value?.duration ?? Duration.zero) * size.width;
@@ -152,7 +144,7 @@ class _ProgressBarPainter extends CustomPainter {
 
     canvas.drawCircle(
       Offset(playedPart, size.height / 2 + height / 2),
-      height*1.1,
+      height * 1.1,
       colors.playedPaint,
     );
   }

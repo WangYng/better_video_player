@@ -15,9 +15,9 @@ class BetterVideoPlayerProgressWidget extends StatefulWidget {
   final Function onDragEnd;
 
   const BetterVideoPlayerProgressWidget({
-    Key key,
-    @required this.onDragStart,
-    @required this.onDragEnd,
+    Key? key,
+    required this.onDragStart,
+    required this.onDragEnd,
   }) : super(key: key);
 
   @override
@@ -26,8 +26,7 @@ class BetterVideoPlayerProgressWidget extends StatefulWidget {
   }
 }
 
-class BetterVideoPlayerProgressWidgetState
-    extends State<BetterVideoPlayerProgressWidget> {
+class BetterVideoPlayerProgressWidgetState extends State<BetterVideoPlayerProgressWidget> {
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -41,8 +40,7 @@ class BetterVideoPlayerProgressWidgetState
 
   Widget buildPosition() {
     final controller = context.watch<BetterVideoPlayerController>();
-    final position = controller.value.videoPlayerController?.value?.position ??
-        Duration.zero;
+    final position = controller.value.videoPlayerController?.value.position ?? Duration.zero;
     return Text(
       '${BetterVideoPlayerUtils.formatDuration(position)}',
       style: TextStyle(
@@ -55,8 +53,7 @@ class BetterVideoPlayerProgressWidgetState
 
   Widget buildDuration() {
     final controller = context.watch<BetterVideoPlayerController>();
-    final duration = controller.value.videoPlayerController?.value?.duration ??
-        Duration.zero;
+    final duration = controller.value.videoPlayerController?.value.duration ?? Duration.zero;
     return Text(
       '${BetterVideoPlayerUtils.formatDuration(duration)}',
       style: TextStyle(
@@ -66,7 +63,7 @@ class BetterVideoPlayerProgressWidgetState
       ),
     );
   }
-  
+
   Widget buildProgressBar() {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),

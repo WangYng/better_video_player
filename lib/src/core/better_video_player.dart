@@ -19,13 +19,13 @@ import 'better_video_player_controller.dart';
 class BetterVideoPlayer extends StatelessWidget {
   final BetterVideoPlayerController controller;
 
-  final BetterVideoPlayerDataSource dataSource;
+  final BetterVideoPlayerDataSource? dataSource;
 
   final bool isFullScreen;
 
   const BetterVideoPlayer({
-    Key key,
-    @required this.controller,
+    Key? key,
+    required this.controller,
     this.dataSource,
     this.isFullScreen = false,
   }) : super(key: key);
@@ -44,13 +44,11 @@ class BetterVideoPlayer extends StatelessWidget {
 
 class _BetterVideoPlayer extends StatefulWidget {
   /// 数据源, 如果有数据源, 使用数据源创建播放控制器
-  final BetterVideoPlayerDataSource dataSource;
+  final BetterVideoPlayerDataSource? dataSource;
 
   final bool isFullScreen;
 
-  const _BetterVideoPlayer(
-      {Key key, this.dataSource, @required this.isFullScreen})
-      : super(key: key);
+  const _BetterVideoPlayer({Key? key, this.dataSource, required this.isFullScreen}) : super(key: key);
 
   @override
   BetterVideoPlayerState createState() {
@@ -58,11 +56,10 @@ class _BetterVideoPlayer extends StatefulWidget {
   }
 }
 
-class BetterVideoPlayerState extends State<_BetterVideoPlayer>
-    with WidgetsBindingObserver {
-  VideoPlayerController videoPlayerController;
+class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindingObserver {
+  VideoPlayerController? videoPlayerController;
 
-  bool _dispose = false;
+  bool _willPop = false;
 
   @override
   void initState() {
@@ -71,76 +68,65 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
     Future.delayed(Duration.zero, () async {
       if (widget.dataSource != null) {
         // 初始化播放器
-        switch (widget.dataSource.type) {
+        switch (widget.dataSource!.type) {
           case BetterVideoPlayerDataSourceType.network:
-            videoPlayerController =
-                VideoPlayerController.network(widget.dataSource.url);
+            videoPlayerController = VideoPlayerController.network(widget.dataSource!.url);
             break;
 
           case BetterVideoPlayerDataSourceType.file:
-            videoPlayerController =
-                VideoPlayerController.file(File(widget.dataSource.url));
+            videoPlayerController = VideoPlayerController.file(File(widget.dataSource!.url));
             break;
         }
 
         try {
           // 创建后必须要初始化才能使用
-          await videoPlayerController.initialize();
+          await videoPlayerController!.initialize();
         } catch (e) {
-          videoPlayerController.value = videoPlayerController.value
-              .copyWith(errorDescription: e.toString());
+          videoPlayerController!.value = videoPlayerController!.value.copyWith(errorDescription: e.toString());
         }
 
         // 绑定播放控制器
-        context
-            .read<BetterVideoPlayerController>()
-            .attachVideoPlayerController(videoPlayerController);
+        context.read<BetterVideoPlayerController>().attachVideoPlayerController(videoPlayerController!);
       } else {
-        VideoPlayerController videoPlayerController = context
-            .read<BetterVideoPlayerController>()
-            .value
-            .videoPlayerController;
-
-        if (videoPlayerController == null) {
-          throw Exception("没有找到播放器");
-        }
+        VideoPlayerController videoPlayerController =
+            context.read<BetterVideoPlayerController>().value.videoPlayerController!;
 
         // 绑定播放控制器
-        context
-            .read<BetterVideoPlayerController>()
-            .attachVideoPlayerController(videoPlayerController);
+        context.read<BetterVideoPlayerController>().attachVideoPlayerController(videoPlayerController);
       }
 
       // 绑定事件
-      context.read<BetterVideoPlayerController>().value = context
-          .read<BetterVideoPlayerController>()
-          .value
-          .copyWith(enterFullScreenCallback: _onEnterFullScreen);
-      context.read<BetterVideoPlayerController>().value = context
-          .read<BetterVideoPlayerController>()
-          .value
-          .copyWith(exitFullScreenCallback: _onExitFullScreen);
+      context.read<BetterVideoPlayerController>().value =
+          context.read<BetterVideoPlayerController>().value.copyWith(enterFullScreenCallback: _onEnterFullScreen);
+      context.read<BetterVideoPlayerController>().value =
+          context.read<BetterVideoPlayerController>().value.copyWith(exitFullScreenCallback: _onExitFullScreen);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final controller = context.read<BetterVideoPlayerController>();
-    String url = widget.dataSource?.url ??
-        controller.value.videoPlayerController.dataSource;
-    return VisibilityDetector(
-      key: Key(url),
-      onVisibilityChanged: (VisibilityInfo info) {
-        // 这个框架在回调时有一个延迟, 目的是为了去重, 防止连续多次回调,
-        // 相同的key如果连续多次触发, 只会返回最后一次
-        // 如果不同的页面使用相同的Key, 同样也会去重
-        // 当dispose后会回调
-        if (!_dispose) {
-          controller.onPlayerVisibilityChanged(info.visibleFraction);
-        }
+    String url = widget.dataSource?.url ?? controller.value.videoPlayerController!.dataSource;
+    return WillPopScope(
+      onWillPop: () {
+        _willPop = true;
+        return Future.value(true);
       },
-      child: BetterVideoPlayerWithControls(
-        isFullScreen: widget.isFullScreen,
+      child: VisibilityDetector(
+        key: Key(url),
+        onVisibilityChanged: (VisibilityInfo info) {
+          // 这个框架在回调时有一个延迟, 目的是为了去重, 防止连续多次回调,
+          // 相同的key如果连续多次触发, 只会返回最后一次
+          // 如果不同的页面使用相同的Key, 同样也会去重
+          // 当dispose后会回调
+          if (!_willPop) {
+            print("_willPop $_willPop $this ${info.visibleFraction}");
+            controller.onPlayerVisibilityChanged(info.visibleFraction);
+          }
+        },
+        child: BetterVideoPlayerWithControls(
+          isFullScreen: widget.isFullScreen,
+        ),
       ),
     );
   }
@@ -148,26 +134,18 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
   @override
   void dispose() {
     videoPlayerController?.dispose();
-    _dispose = true;
+    _willPop = true;
     super.dispose();
   }
 
   void _onEnterFullScreen() async {
     await SystemChrome.setEnabledSystemUIOverlays([]);
 
-    final aspectRatio = context
-            .read<BetterVideoPlayerController>()
-            .value
-            ?.videoPlayerController
-            ?.value
-            ?.aspectRatio ??
-        1.0;
+    final aspectRatio =
+        context.read<BetterVideoPlayerController>().value.videoPlayerController?.value.aspectRatio ?? 1.0;
     List<DeviceOrientation> deviceOrientations;
     if (aspectRatio < 1.0) {
-      deviceOrientations = [
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown
-      ];
+      deviceOrientations = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown];
     } else {
       if (Platform.isIOS) {
         deviceOrientations = [DeviceOrientation.landscapeRight];
@@ -176,10 +154,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
           DeviceOrientation.landscapeLeft,
         ];
       } else {
-        deviceOrientations = [
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight
-        ];
+        deviceOrientations = [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight];
       }
     }
     await SystemChrome.setPreferredOrientations(deviceOrientations);
@@ -188,20 +163,17 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
 
     // 屏幕常亮
     bool closeWakelock = false;
-    if (!controller.value.configuration.allowedScreenSleep &&
-        !(await Wakelock.enabled)) {
+    if (!controller.value.configuration.allowedScreenSleep && !(await Wakelock.enabled)) {
       await Wakelock.enable();
       closeWakelock = true;
     }
 
     final fullScreenController = BetterVideoPlayerController.copy(controller);
     var fullScreenConfiguration = fullScreenController.value.configuration;
-    final isPlaying =
-        fullScreenController.value.videoPlayerController.value.isPlaying;
-    fullScreenConfiguration =
-        fullScreenConfiguration.copyWith(autoPlay: isPlaying);
-    fullScreenController.value = fullScreenController.value
-        .copyWith(configuration: fullScreenConfiguration);
+    final isPlaying = fullScreenController.value.videoPlayerController!.value.isPlaying;
+
+    fullScreenConfiguration = fullScreenConfiguration.copyWith(autoPlay: isPlaying);
+    fullScreenController.value = fullScreenController.value.copyWith(configuration: fullScreenConfiguration);
 
     await Navigator.of(context, rootNavigator: true).push(
       CupertinoPageRoute<BetterVideoPlayer>(builder: (BuildContext context) {
@@ -233,6 +205,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer>
   }
 
   void _onExitFullScreen() async {
+    _willPop = true;
     Navigator.pop(context);
   }
 }

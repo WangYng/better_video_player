@@ -1,6 +1,5 @@
-import 'package:better_video_player_example/constants.dart';
 import 'package:better_video_player/better_video_player.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:better_video_player_example/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +17,8 @@ class _PortraitPlayerPageState extends State<PortraitPlayerPage> {
   void initState() {
     _BetterVideoPlayerController = BetterVideoPlayerController.configuration(
       BetterVideoPlayerConfiguration(
-        placeholder: CachedNetworkImage(
-          imageUrl: kPortraitVideoThumbnail,
+        placeholder: Image.network(
+          kPortraitVideoThumbnail,
           fit: BoxFit.contain,
         ),
         controls: const _CustomVideoPlayerControls(),
@@ -60,8 +59,7 @@ class _CustomVideoPlayerControls extends StatefulWidget {
   }
 }
 
-class _CustomVideoPlayerControlsState
-    extends State<_CustomVideoPlayerControls> {
+class _CustomVideoPlayerControlsState extends State<_CustomVideoPlayerControls> {
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<BetterVideoPlayerController>();
@@ -71,13 +69,11 @@ class _CustomVideoPlayerControlsState
       child: Stack(
         fit: StackFit.expand,
         children: [
-          if (controller.value.videoPlayerController?.value?.hasError ??
-              false)
+          if (controller.value.videoPlayerController?.value?.hasError ?? false)
             buildError()
           else if (controller.value.isLoading)
             Center(child: buildLoading())
-          else if (!(controller.value.videoPlayerController?.value?.isPlaying ??
-              false))
+          else if (!(controller.value.videoPlayerController?.value?.isPlaying ?? false))
             Stack(children: [
               Center(child: buildPlayPause()),
               Align(alignment: Alignment.bottomCenter, child: buildProgress()),
@@ -149,8 +145,7 @@ class _CustomVideoPlayerControlsState
       if (controller.value?.videoPlayerController?.value?.isPlaying ?? false) {
         controller.pause();
       } else {
-        if (controller.value?.videoPlayerController?.value?.initialized ??
-            false) {
+        if (controller.value?.videoPlayerController?.value?.isInitialized ?? false) {
           if (controller.value.isVideoFinish) {
             controller.seekTo(const Duration());
           }

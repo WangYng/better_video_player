@@ -1,10 +1,7 @@
 import 'package:video_player/video_player.dart';
 
 class BetterVideoPlayerUtils {
-  static const int _bufferingInterval = 20000;
-
   static String formatDuration(Duration position) {
-    assert(position != null, "Position can't be null!");
     final ms = position.inMilliseconds;
 
     int seconds = ms ~/ 1000;
@@ -31,42 +28,35 @@ class BetterVideoPlayerUtils {
             ? '00'
             : '0$seconds';
 
-    final formattedTime =
-        '${hoursString == '00' ? '' : '$hoursString:'}$minutesString:$secondsString';
+    final formattedTime = '${hoursString == '00' ? '' : '$hoursString:'}$minutesString:$secondsString';
 
     return formattedTime;
   }
 
-  static bool isVideoFinished(VideoPlayerValue value) {
-    return value?.position != null &&
-        value?.duration != null &&
-        value.position >= value.duration;
-  }
-
-  ///Latest value can be null
-  static bool isLoading(VideoPlayerValue value) {
+  static bool isVideoFinished(VideoPlayerValue? value) {
     if (value == null) {
       return true;
     }
 
-    if (value.duration == null) {
+    return value.position >= value.duration;
+  }
+
+  ///Latest value can be null
+  static bool isLoading(VideoPlayerValue? value) {
+    if (value == null) {
       return true;
     }
 
-    if (!value.initialized) {
+    if (!value.isInitialized) {
       return true;
     }
 
-    final Duration position = value.position;
-
-    Duration bufferedEndPosition;
-    if (value.buffered?.isNotEmpty == true) {
+    Duration? bufferedEndPosition;
+    if (value.buffered.isNotEmpty == true) {
       bufferedEndPosition = value.buffered.last.end;
     }
 
-    if (position != null && bufferedEndPosition != null) {
-      final difference = bufferedEndPosition - position;
-
+    if (bufferedEndPosition != null) {
       if (value.isPlaying && value.isBuffering) {
         return true;
       }
@@ -74,13 +64,11 @@ class BetterVideoPlayerUtils {
     return false;
   }
 
-  static double aspectRatio(VideoPlayerValue value) {
-    if (value == null ||
-        value.size == null ||
-        value.size.width == 0 ||
-        value.size.height == 0) {
+  static double? aspectRatio(VideoPlayerValue? value) {
+    if (value == null) {
       return null;
     }
+
     final double aspectRatio = value.size.width / value.size.height;
     if (aspectRatio <= 0) {
       return 1.0;

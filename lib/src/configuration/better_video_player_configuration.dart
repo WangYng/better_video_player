@@ -35,13 +35,13 @@ class BetterVideoPlayerConfiguration {
   });
 
   BetterVideoPlayerConfiguration copyWith({
-    bool autoPlay,
-    bool looping,
-    Widget placeholder,
-    bool allowedScreenSleep,
-    bool autoPlayWhenResume,
-    Widget controls,
-    Widget fullScreenControls,
+    bool? autoPlay,
+    bool? looping,
+    Widget? placeholder,
+    bool? allowedScreenSleep,
+    bool? autoPlayWhenResume,
+    Widget? controls,
+    Widget? fullScreenControls,
   }) {
     return BetterVideoPlayerConfiguration(
       autoPlay: autoPlay ?? this.autoPlay,

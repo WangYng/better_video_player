@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'better_video_player'
-  s.version          = '0.0.2'
+  s.version          = '1.0.0'
   s.summary          = 'Advanced video player based on video_player.'
   s.description      = <<-DESC
 Advanced video player based on video_player.

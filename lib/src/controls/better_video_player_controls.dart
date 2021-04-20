@@ -10,8 +10,7 @@ import 'package:provider/provider.dart';
 class BetterVideoPlayerControls extends StatefulWidget {
   final bool isFullScreen;
 
-  const BetterVideoPlayerControls({Key key, @required this.isFullScreen})
-      : super(key: key);
+  const BetterVideoPlayerControls({Key? key, required this.isFullScreen}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -33,8 +32,7 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
   Widget build(BuildContext context) {
     final controller = context.watch<BetterVideoPlayerController>();
 
-    final isPlaying =
-        controller.value?.videoPlayerController?.value?.isPlaying ?? false;
+    final isPlaying = controller.value.videoPlayerController?.value.isPlaying ?? false;
     if (isPlaying && isAlwaysShow()) {
       scheduleMicrotask(() => show(duration: Duration(seconds: 3)));
     } else if (!isPlaying && _isHide) {
@@ -53,19 +51,15 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
             absorbing: _isHide,
             child: Stack(
               children: [
-                if (controller.value.videoPlayerController?.value?.hasError ??
-                    false) // 发生错误
+                if (controller.value.videoPlayerController?.value.hasError ?? false) // 发生错误
                   buildError(_onRestart)
                 else if (controller.value.isLoading) // 加载中
                   Center(child: buildLoading())
-                else if (controller.value.isVideoFinish &&
-                    !controller.value.configuration.looping) // 播放完成
+                else if (controller.value.isVideoFinish && !controller.value.configuration.looping) // 播放完成
                   buildReplay(_onPlayPause)
                 else if (controller.value.wifiInterrupted) // wifi中断
                   buildWifiInterrupted(_onPlayPause)
-                else if (!(controller
-                        .value.videoPlayerController?.value?.isPlaying ??
-                    false)) // 暂停
+                else if (!(controller.value.videoPlayerController?.value.isPlaying ?? false)) // 暂停
                   buildCenterPause(_onPlayPause)
                 else
                   const SizedBox(),
@@ -85,7 +79,7 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
     super.dispose();
   }
 
-  Widget buildTopBar(Function onTap) {
+  Widget buildTopBar(VoidCallback onTap) {
     if (widget.isFullScreen)
       return Align(
         alignment: Alignment.topLeft,
@@ -142,8 +136,7 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
                 ),
               ),
               if (controller.value.videoPlayerController != null)
-                buildExpand(
-                    widget.isFullScreen ? _onReduceCollapse : _onExpandCollapse)
+                buildExpand(widget.isFullScreen ? _onReduceCollapse : _onExpandCollapse)
               else
                 SizedBox(),
             ],
@@ -153,7 +146,7 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
     );
   }
 
-  Widget buildError(Function onTap) {
+  Widget buildError(VoidCallback onTap) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -180,7 +173,7 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
     );
   }
 
-  Widget buildExpand(Function onTap) {
+  Widget buildExpand(VoidCallback onTap) {
     return CupertinoButton(
       padding: EdgeInsets.zero,
       onPressed: onTap,
@@ -200,13 +193,13 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
     );
   }
 
-  Widget buildPlayPause(Function onTap) {
+  Widget buildPlayPause(VoidCallback onTap) {
     final controller = context.watch<BetterVideoPlayerController>();
 
     return CupertinoButton(
       padding: EdgeInsets.zero,
       onPressed: onTap,
-      child: controller.value.videoPlayerController?.value?.isPlaying ?? false
+      child: controller.value.videoPlayerController?.value.isPlaying ?? false
           ? SizedBox(
               width: 44,
               height: 44,
@@ -327,15 +320,14 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
     final controller = context.read<BetterVideoPlayerController>();
 
     setState(() {
-      if (controller.value?.videoPlayerController?.value?.isPlaying ?? false) {
+      if (controller.value.videoPlayerController?.value.isPlaying ?? false) {
         controller.value = controller.value.copyWith(isPauseFromUser: true);
 
         controller.pause();
       } else {
         controller.value = controller.value.copyWith(isPauseFromUser: false);
 
-        if (controller.value?.videoPlayerController?.value?.initialized ??
-            false) {
+        if (controller.value.videoPlayerController?.value.isInitialized ?? false) {
           if (controller.value.isVideoFinish) {
             controller.seekTo(const Duration());
           }
@@ -353,9 +345,9 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
 
 mixin HideStuff<T extends StatefulWidget> on State<T> {
   bool _isHide = true;
-  Timer _hideTimer;
+  Timer? _hideTimer;
 
-  void show({Duration duration}) {
+  void show({Duration? duration}) {
     _hideTimer?.cancel();
     if (duration != null) {
       _hideTimer = Timer(duration, () {

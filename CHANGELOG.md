@@ -12,3 +12,5 @@ auto play when resume
 fix some bug.
 ## 0.0.7
 fix some bug.
+## 1.0.0
+null safety.

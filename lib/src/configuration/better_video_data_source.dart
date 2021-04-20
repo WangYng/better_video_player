@@ -10,8 +10,7 @@ class BetterVideoPlayerDataSource {
   const BetterVideoPlayerDataSource(
     this.type,
     this.url,
-  ) : assert((type != null && url != null),
-            "Url can't be null in network or file data source");
+  );
 
   /// 工厂初始化数据源
   factory BetterVideoPlayerDataSource.network(String url) {

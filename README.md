@@ -10,7 +10,7 @@ Advanced video player based on video_player.
 
 ```yaml
 dependencies:
-  better_video_player: ^0.0.7
+  better_video_player: ^1.0.0
 ```
 
 2. Install it
@@ -47,3 +47,4 @@ AspectRatio(
 - [x] progress indicator
 - [x] tip when wifi interrupted
 - [x] auto play when resume
+- [x] null safety

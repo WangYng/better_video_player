@@ -1,6 +1,5 @@
 import 'package:better_video_player/better_video_player.dart';
 import 'package:better_video_player_example/constants.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class NormalPlayerPage extends StatefulWidget {
@@ -31,8 +30,8 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
               child: BetterVideoPlayer(
                 controller: BetterVideoPlayerController.configuration(
                   BetterVideoPlayerConfiguration(
-                    placeholder: CachedNetworkImage(
-                      imageUrl: kTestVideoThumbnail,
+                    placeholder: Image.network(
+                      kTestVideoThumbnail,
                       fit: BoxFit.cover,
                     ),
                   ),
