@@ -14,3 +14,5 @@ fix some bug.
 fix some bug.
 ## 1.0.0
 null safety.
+## 1.0.1
+fix some bug.

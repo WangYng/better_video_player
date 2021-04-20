@@ -1,6 +1,6 @@
 name: better_video_player
 description: Advanced video player based on video_player.
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/WangYng
 repository: https://github.com/WangYng/better_video_player
 
@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  wakelock: ^0.5.1
+  wakelock: ^0.4.0
   visibility_detector: ^0.2.0
   video_player: ^2.1.1
   provider: ^5.0.0
