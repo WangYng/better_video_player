@@ -32,7 +32,7 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
                   BetterVideoPlayerConfiguration(
                     placeholder: Image.network(
                       kTestVideoThumbnail,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),

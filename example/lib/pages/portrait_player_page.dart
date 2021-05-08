@@ -11,11 +11,11 @@ class PortraitPlayerPage extends StatefulWidget {
 }
 
 class _PortraitPlayerPageState extends State<PortraitPlayerPage> {
-  BetterVideoPlayerController _BetterVideoPlayerController;
+  late BetterVideoPlayerController _betterVideoPlayerController;
 
   @override
   void initState() {
-    _BetterVideoPlayerController = BetterVideoPlayerController.configuration(
+    _betterVideoPlayerController = BetterVideoPlayerController.configuration(
       BetterVideoPlayerConfiguration(
         placeholder: Image.network(
           kPortraitVideoThumbnail,
@@ -34,7 +34,7 @@ class _PortraitPlayerPageState extends State<PortraitPlayerPage> {
         title: Text("Portrait player"),
       ),
       body: BetterVideoPlayer(
-        controller: _BetterVideoPlayerController,
+        controller: _betterVideoPlayerController,
         dataSource: BetterVideoPlayerDataSource(
           BetterVideoPlayerDataSourceType.network,
           kPortraitVideoUrl,
@@ -45,13 +45,13 @@ class _PortraitPlayerPageState extends State<PortraitPlayerPage> {
 
   @override
   void dispose() {
-    _BetterVideoPlayerController.dispose();
+    _betterVideoPlayerController.dispose();
     super.dispose();
   }
 }
 
 class _CustomVideoPlayerControls extends StatefulWidget {
-  const _CustomVideoPlayerControls({Key key}) : super(key: key);
+  const _CustomVideoPlayerControls({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -69,11 +69,11 @@ class _CustomVideoPlayerControlsState extends State<_CustomVideoPlayerControls> 
       child: Stack(
         fit: StackFit.expand,
         children: [
-          if (controller.value.videoPlayerController?.value?.hasError ?? false)
+          if (controller.value.videoPlayerController?.value.hasError ?? false)
             buildError()
           else if (controller.value.isLoading)
             Center(child: buildLoading())
-          else if (!(controller.value.videoPlayerController?.value?.isPlaying ?? false))
+          else if (!(controller.value.videoPlayerController?.value.isPlaying ?? false))
             Stack(children: [
               Center(child: buildPlayPause()),
               Align(alignment: Alignment.bottomCenter, child: buildProgress()),
@@ -142,10 +142,10 @@ class _CustomVideoPlayerControlsState extends State<_CustomVideoPlayerControls> 
     final controller = context.read<BetterVideoPlayerController>();
 
     setState(() {
-      if (controller.value?.videoPlayerController?.value?.isPlaying ?? false) {
+      if (controller.value.videoPlayerController?.value.isPlaying ?? false) {
         controller.pause();
       } else {
-        if (controller.value?.videoPlayerController?.value?.isInitialized ?? false) {
+        if (controller.value.videoPlayerController?.value.isInitialized ?? false) {
           if (controller.value.isVideoFinish) {
             controller.seekTo(const Duration());
           }

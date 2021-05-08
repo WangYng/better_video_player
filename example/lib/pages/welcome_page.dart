@@ -44,7 +44,7 @@ class _WelcomePageState extends State<WelcomePage> {
     ];
   }
 
-  Widget _buildExampleElementWidget(String name, Function onClicked) {
+  Widget _buildExampleElementWidget(String name, Function() onClicked) {
     return Material(
       child: InkWell(
         onTap: onClicked,

@@ -34,7 +34,7 @@ class _CustomPlayerPageState extends State<CustomPlayerPage> {
                   BetterVideoPlayerConfiguration(
                     placeholder: Image.network(
                       kTestVideoThumbnail,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                     ),
                     controls: _CustomControls(isFullScreen: false),
                     fullScreenControls: _CustomControls(isFullScreen: true),
@@ -67,7 +67,7 @@ class _CustomPlayerPageState extends State<CustomPlayerPage> {
 class _CustomControls extends BetterVideoPlayerControls {
   final bool isFullScreen;
 
-  const _CustomControls({Key key, @required this.isFullScreen}) : super(key: key, isFullScreen: isFullScreen);
+  const _CustomControls({Key? key, required this.isFullScreen}) : super(key: key, isFullScreen: isFullScreen);
 
   @override
   State<StatefulWidget> createState() {
@@ -77,7 +77,7 @@ class _CustomControls extends BetterVideoPlayerControls {
 
 class _CustomControlsState extends BetterVideoPlayerControlsState {
   /// 暂停播放按钮
-  Widget buildPlayPause(Function onTap) {
+  Widget buildPlayPause(Function() onTap) {
     final controller = context.watch<BetterVideoPlayerController>();
     return CupertinoButton(
       padding: EdgeInsets.symmetric(horizontal: 9, vertical: 5),
@@ -89,7 +89,7 @@ class _CustomControlsState extends BetterVideoPlayerControlsState {
   }
 
   /// 全屏按钮
-  Widget buildExpand(Function onTap) {
+  Widget buildExpand(Function() onTap) {
     return CupertinoButton(
       padding: EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       onPressed: onTap,
@@ -197,7 +197,7 @@ class _CustomControlsState extends BetterVideoPlayerControlsState {
   }
 
   /// 发生错误
-  Widget buildError(Function onTap) {
+  Widget buildError(Function() onTap) {
     return Container(
       color: Colors.black38,
       child: Center(
@@ -243,7 +243,7 @@ class _CustomControlsState extends BetterVideoPlayerControlsState {
   }
 
   /// 返回键
-  Widget buildTopBar(Function onTap) {
+  Widget buildTopBar(Function() onTap) {
     if (widget.isFullScreen)
       return Align(
         alignment: Alignment.topLeft,

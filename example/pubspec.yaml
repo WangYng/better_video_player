@@ -7,8 +7,9 @@ description: Demonstrates how to use the better_video_player plugin.
 version: 1.0.0+100
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
-
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=2.0.0"
+  
 dependencies:
   flutter:
     sdk: flutter
