@@ -65,11 +65,12 @@ class BetterVideoPlayerUtils {
   }
 
   static double? aspectRatio(VideoPlayerValue? value) {
-    if (value == null) {
+    if (value == null || value.size.width == 0 || value.size.height == 0) {
       return null;
     }
 
     final double aspectRatio = value.size.width / value.size.height;
+
     if (aspectRatio <= 0) {
       return 1.0;
     }
