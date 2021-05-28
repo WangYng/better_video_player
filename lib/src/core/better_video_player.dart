@@ -66,6 +66,11 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
     super.initState();
 
     Future.delayed(Duration.zero, () async {
+
+      // 绑定事件
+      context.read<BetterVideoPlayerController>().value =
+          context.read<BetterVideoPlayerController>().value.copyWith(exitFullScreenCallback: _onExitFullScreen);
+
       if (widget.dataSource != null) {
         // 初始化播放器
         switch (widget.dataSource!.type) {
@@ -98,8 +103,6 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
       // 绑定事件
       context.read<BetterVideoPlayerController>().value =
           context.read<BetterVideoPlayerController>().value.copyWith(enterFullScreenCallback: _onEnterFullScreen);
-      context.read<BetterVideoPlayerController>().value =
-          context.read<BetterVideoPlayerController>().value.copyWith(exitFullScreenCallback: _onExitFullScreen);
     });
   }
 
