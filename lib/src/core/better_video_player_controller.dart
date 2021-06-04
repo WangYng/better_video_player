@@ -155,7 +155,11 @@ class BetterVideoPlayerController
 
   /// 暂停
   Future<void> pause() async {
-    await value.videoPlayerController?.pause();
+    if (value.videoPlayerController == null) { // 还在初始化中, 关闭自动播放
+      value = value.copyWith(configuration: value.configuration.copyWith(autoPlay: false));
+    } else {
+      await value.videoPlayerController?.pause();
+    }
   }
 
   /// 跳转
