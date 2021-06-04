@@ -22,3 +22,5 @@ fix some bug.
 fix some bug.
 ## 1.0.4
 fix some bug.
+## 1.0.5
+fix some bug.
