@@ -6,6 +6,7 @@ repository: https://github.com/WangYng/better_video_player
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
+  flutter: ">=1.20.0"
 
 dependencies:
   flutter:
