@@ -18,3 +18,5 @@ fix some bug.
 fix some bug.
 ## 0.1.0
 upgrade dart version.
+## 0.1.1
+fix some bug.
