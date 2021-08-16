@@ -149,7 +149,7 @@ class _CustomVideoPlayerControlsState
       if (controller.value?.videoPlayerController?.value?.isPlaying ?? false) {
         controller.pause();
       } else {
-        if (controller.value?.videoPlayerController?.value?.initialized ??
+        if (controller.value?.videoPlayerController?.value?.isInitialized ??
             false) {
           if (controller.value.isVideoFinish) {
             controller.seekTo(const Duration());

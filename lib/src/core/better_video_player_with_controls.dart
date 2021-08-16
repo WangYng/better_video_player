@@ -30,7 +30,7 @@ class _BetterVideoPlayerWithControlsState
         children: <Widget>[
           Offstage(
             offstage:
-                controller.value?.videoPlayerController?.value?.initialized ??
+                controller.value?.videoPlayerController?.value?.isInitialized ??
                     false,
             child: controller.value.configuration.placeholder,
           ),
@@ -41,7 +41,7 @@ class _BetterVideoPlayerWithControlsState
                         controller.value?.videoPlayerController?.value) ??
                     (16.0 / 9.0),
                 child:
-                    controller.value.videoPlayerController?.value?.initialized ??
+                    controller.value.videoPlayerController?.value?.isInitialized ??
                             false
                         ? VideoPlayer(controller.value.videoPlayerController)
                         : const SizedBox(),

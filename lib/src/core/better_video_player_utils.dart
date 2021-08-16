@@ -53,7 +53,7 @@ class BetterVideoPlayerUtils {
       return true;
     }
 
-    if (!value.initialized) {
+    if (!value.isInitialized) {
       return true;
     }
 

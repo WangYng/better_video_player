@@ -334,7 +334,7 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
       } else {
         controller.value = controller.value.copyWith(isPauseFromUser: false);
 
-        if (controller.value?.videoPlayerController?.value?.initialized ??
+        if (controller.value?.videoPlayerController?.value?.isInitialized ??
             false) {
           if (controller.value.isVideoFinish) {
             controller.seekTo(const Duration());
