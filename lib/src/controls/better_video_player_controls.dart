@@ -138,7 +138,7 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
               if (controller.value.videoPlayerController != null)
                 buildExpand(widget.isFullScreen ? _onReduceCollapse : _onExpandCollapse)
               else
-                SizedBox(),
+                SizedBox(width: 9),
             ],
           ),
         ),
