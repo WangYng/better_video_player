@@ -12,6 +12,12 @@ auto play when resume
 fix some bug.
 ## 0.0.7
 fix some bug.
+## 0.0.9
+fix some bug.
+## 0.1.0
+fix some bug.
+## 0.1.1
+fix some bug.
 ## 1.0.0
 null safety.
 ## 1.0.1
@@ -23,4 +29,6 @@ fix some bug.
 ## 1.0.4
 fix some bug.
 ## 1.0.5
+fix some bug.
+## 1.0.6
 fix some bug.
