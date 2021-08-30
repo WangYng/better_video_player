@@ -8,6 +8,30 @@ class NormalPlayerPage extends StatefulWidget {
 }
 
 class _NormalPlayerPageState extends State<NormalPlayerPage> {
+
+  late final BetterVideoPlayerController controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller = BetterVideoPlayerController.configuration(
+      BetterVideoPlayerConfiguration(
+        placeholder: Image.network(
+          kTestVideoThumbnail,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,14 +52,7 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
             AspectRatio(
               aspectRatio: 16.0 / 9.0,
               child: BetterVideoPlayer(
-                controller: BetterVideoPlayerController.configuration(
-                  BetterVideoPlayerConfiguration(
-                    placeholder: Image.network(
-                      kTestVideoThumbnail,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
+                controller: controller,
                 dataSource: BetterVideoPlayerDataSource(
                   BetterVideoPlayerDataSourceType.network,
                   kTestVideoUrl,

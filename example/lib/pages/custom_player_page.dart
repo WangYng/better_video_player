@@ -10,6 +10,32 @@ class CustomPlayerPage extends StatefulWidget {
 }
 
 class _CustomPlayerPageState extends State<CustomPlayerPage> {
+
+  late final BetterVideoPlayerController controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller = BetterVideoPlayerController.configuration(
+      BetterVideoPlayerConfiguration(
+        placeholder: Image.network(
+          kTestVideoThumbnail,
+          fit: BoxFit.contain,
+        ),
+        controls: _CustomControls(isFullScreen: false),
+        fullScreenControls: _CustomControls(isFullScreen: true),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,16 +56,7 @@ class _CustomPlayerPageState extends State<CustomPlayerPage> {
             AspectRatio(
               aspectRatio: 16.0 / 9.0,
               child: BetterVideoPlayer(
-                controller: BetterVideoPlayerController.configuration(
-                  BetterVideoPlayerConfiguration(
-                    placeholder: Image.network(
-                      kTestVideoThumbnail,
-                      fit: BoxFit.contain,
-                    ),
-                    controls: _CustomControls(isFullScreen: false),
-                    fullScreenControls: _CustomControls(isFullScreen: true),
-                  ),
-                ),
+                controller: controller,
                 dataSource: BetterVideoPlayerDataSource(
                   BetterVideoPlayerDataSourceType.network,
                   kTestVideoUrl,

@@ -11,11 +11,13 @@ class PortraitPlayerPage extends StatefulWidget {
 }
 
 class _PortraitPlayerPageState extends State<PortraitPlayerPage> {
-  late BetterVideoPlayerController _betterVideoPlayerController;
+  late BetterVideoPlayerController controller;
 
   @override
   void initState() {
-    _betterVideoPlayerController = BetterVideoPlayerController.configuration(
+    super.initState();
+
+    controller = BetterVideoPlayerController.configuration(
       BetterVideoPlayerConfiguration(
         placeholder: Image.network(
           kPortraitVideoThumbnail,
@@ -24,7 +26,13 @@ class _PortraitPlayerPageState extends State<PortraitPlayerPage> {
         controls: const _CustomVideoPlayerControls(),
       ),
     );
-    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -34,19 +42,13 @@ class _PortraitPlayerPageState extends State<PortraitPlayerPage> {
         title: Text("Portrait player"),
       ),
       body: BetterVideoPlayer(
-        controller: _betterVideoPlayerController,
+        controller: controller,
         dataSource: BetterVideoPlayerDataSource(
           BetterVideoPlayerDataSourceType.network,
           kPortraitVideoUrl,
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _betterVideoPlayerController.dispose();
-    super.dispose();
   }
 }
 

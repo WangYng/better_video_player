@@ -34,3 +34,5 @@ fix some bug.
 fix some bug.
 ## 1.0.7
 fix some bug.
+## 1.0.8
+fix some bug.

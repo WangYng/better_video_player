@@ -30,6 +30,14 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
     await start();
   }
 
+  void detachVideoPlayerController() async {
+    if (value.videoPlayerController != null) {
+      value.videoPlayerController?.removeListener(_onVideoPlayerChanged);
+    }
+    value.videoPlayerController = null;
+    notifyListeners();
+  }
+
   Future<void> start() async {
     // 开始自动播放
     if (value.configuration.autoPlay) {
@@ -214,7 +222,6 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
   void dispose() {
     if (!_dispose) {
       _dispose = true;
-      value.videoPlayerController?.removeListener(_onVideoPlayerChanged);
       _connectivitySubscription?.cancel();
       super.dispose();
     }

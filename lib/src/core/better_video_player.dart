@@ -57,6 +57,7 @@ class _BetterVideoPlayer extends StatefulWidget {
 }
 
 class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindingObserver {
+  BetterVideoPlayerController? betterVideoPlayerController;
   VideoPlayerController? videoPlayerController;
 
   bool _willPop = false;
@@ -65,8 +66,9 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
   void initState() {
     super.initState();
 
-    Future.delayed(Duration.zero, () async {
+    betterVideoPlayerController = context.read<BetterVideoPlayerController>();
 
+    Future.delayed(Duration.zero, () async {
       // 绑定事件
       context.read<BetterVideoPlayerController>().value =
           context.read<BetterVideoPlayerController>().value.copyWith(exitFullScreenCallback: _onExitFullScreen);
@@ -108,11 +110,12 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.read<BetterVideoPlayerController>();
-    String url = widget.dataSource?.url ?? controller.value.videoPlayerController!.dataSource;
+    String? url = widget.dataSource?.url;
+    url = url ?? context.read<BetterVideoPlayerController>().value.videoPlayerController!.dataSource;
     return WillPopScope(
       onWillPop: () {
         _willPop = true;
+        betterVideoPlayerController?.detachVideoPlayerController();
         return Future.value(true);
       },
       child: VisibilityDetector(
@@ -123,8 +126,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
           // 如果不同的页面使用相同的Key, 同样也会去重
           // 当dispose后会回调
           if (!_willPop) {
-            print("_willPop $_willPop $this ${info.visibleFraction}");
-            controller.onPlayerVisibilityChanged(info.visibleFraction);
+            context.read<BetterVideoPlayerController>().onPlayerVisibilityChanged(info.visibleFraction);
           }
         },
         child: BetterVideoPlayerWithControls(
@@ -134,10 +136,16 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
     );
   }
 
+
+
   @override
   void dispose() {
+    if (!_willPop) {
+      betterVideoPlayerController?.detachVideoPlayerController();
+      _willPop = true;
+    }
     videoPlayerController?.dispose();
-    _willPop = true;
+    videoPlayerController = null;
     super.dispose();
   }
 
@@ -192,6 +200,9 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
       }),
     );
 
+    // 需要延时, 因为页面关闭后不会立即释放provider
+    Future.delayed(Duration(milliseconds: 500), () => fullScreenController.dispose());
+
     if (closeWakelock) {
       await Wakelock.disable();
     }
@@ -209,6 +220,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
 
   void _onExitFullScreen() async {
     _willPop = true;
+    betterVideoPlayerController?.detachVideoPlayerController();
     Navigator.pop(context);
   }
 }
