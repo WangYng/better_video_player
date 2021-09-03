@@ -34,7 +34,6 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
       value.videoPlayerController?.removeListener(_onVideoPlayerChanged);
     }
     value.videoPlayerController = null;
-    notifyListeners();
   }
 
   Future<void> start() async {
