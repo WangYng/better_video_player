@@ -20,6 +20,9 @@ class BetterVideoPlayerControls extends StatefulWidget {
 
 class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
     with HideStuff<BetterVideoPlayerControls> {
+
+  bool absorbing = false;
+
   @override
   void initState() {
     super.initState();
@@ -48,7 +51,7 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
       child: Stack(
         children: [
           AbsorbPointer(
-            absorbing: _isHide,
+            absorbing: absorbing || _isHide,
             child: Stack(
               children: [
                 if (controller.value.videoPlayerController?.value.hasError ?? false) // 发生错误
@@ -319,22 +322,43 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
   void _onPlayPause() {
     final controller = context.read<BetterVideoPlayerController>();
 
-    setState(() {
-      if (controller.value.videoPlayerController?.value.isPlaying ?? false) {
-        controller.value = controller.value.copyWith(isPauseFromUser: true);
+    if (controller.value.videoPlayerController == null) {
+      return;
+    }
 
-        controller.pause();
-      } else {
-        controller.value = controller.value.copyWith(isPauseFromUser: false);
+    if (controller.value.videoPlayerController?.value.isPlaying ?? false) {
+      controller.value = controller.value.copyWith(isPauseFromUser: true);
 
-        if (controller.value.videoPlayerController?.value.isInitialized ?? false) {
+      setState(() {
+        absorbing = true;
+      });
+      Future.delayed(Duration.zero, () async {
+        await controller.pause();
+        await Future.delayed(Duration(milliseconds: 100));
+        setState(() {
+          absorbing = false;
+        });
+      });
+
+    } else {
+      controller.value = controller.value.copyWith(isPauseFromUser: false);
+
+      if (controller.value.videoPlayerController?.value.isInitialized ?? false) {
+        setState(() {
+          absorbing = true;
+        });
+        Future.delayed(Duration.zero, () async {
           if (controller.value.isVideoFinish) {
-            controller.seekTo(const Duration());
+            await controller.seekTo(const Duration());
           }
-          controller.play();
-        }
+          await controller.play();
+          await Future.delayed(Duration(milliseconds: 100));
+          setState(() {
+            absorbing = false;
+          });
+        });
       }
-    });
+    }
   }
 
   void _onRestart() {

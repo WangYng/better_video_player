@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:audio_session/audio_session.dart';
 import 'package:better_video_player/src/configuration/better_video_player_configuration.dart';
 import 'package:better_video_player/src/core/better_video_player_utils.dart';
 import 'package:connectivity/connectivity.dart';
@@ -104,15 +103,11 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
     if (value.videoPlayerController?.value.isPlaying ?? false) {
       return;
     }
-    final session = await AudioSession.instance;
-    await session.configure(AudioSessionConfiguration.music());
-    if (await session.setActive(true)) {
-      await value.videoPlayerController?.play();
+    await value.videoPlayerController?.play();
 
-      if (value.wifiInterrupted) {
-        value = value.copyWith(wifiInterrupted: false);
-        _connectivitySubscription?.cancel();
-      }
+    if (value.wifiInterrupted) {
+      value = value.copyWith(wifiInterrupted: false);
+      _connectivitySubscription?.cancel();
     }
   }
 
