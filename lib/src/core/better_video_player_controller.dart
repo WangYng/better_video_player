@@ -218,6 +218,7 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
     if (!_dispose) {
       _dispose = true;
       _connectivitySubscription?.cancel();
+      detachVideoPlayerController();
       super.dispose();
     }
   }

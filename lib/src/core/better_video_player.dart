@@ -141,7 +141,6 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
   @override
   void dispose() {
     if (!_willPop) {
-      betterVideoPlayerController?.detachVideoPlayerController();
       _willPop = true;
     }
     videoPlayerController?.dispose();
