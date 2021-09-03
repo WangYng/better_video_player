@@ -112,26 +112,19 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
   Widget build(BuildContext context) {
     String? url = widget.dataSource?.url;
     url = url ?? context.read<BetterVideoPlayerController>().value.videoPlayerController!.dataSource;
-    return WillPopScope(
-      onWillPop: () {
-        _willPop = true;
-        betterVideoPlayerController?.detachVideoPlayerController();
-        return Future.value(true);
+    return VisibilityDetector(
+      key: Key(url),
+      onVisibilityChanged: (VisibilityInfo info) {
+        // 这个框架在回调时有一个延迟, 目的是为了去重, 防止连续多次回调,
+        // 相同的key如果连续多次触发, 只会返回最后一次
+        // 如果不同的页面使用相同的Key, 同样也会去重
+        // 当dispose后会回调
+        if (!_willPop) {
+          context.read<BetterVideoPlayerController>().onPlayerVisibilityChanged(info.visibleFraction);
+        }
       },
-      child: VisibilityDetector(
-        key: Key(url),
-        onVisibilityChanged: (VisibilityInfo info) {
-          // 这个框架在回调时有一个延迟, 目的是为了去重, 防止连续多次回调,
-          // 相同的key如果连续多次触发, 只会返回最后一次
-          // 如果不同的页面使用相同的Key, 同样也会去重
-          // 当dispose后会回调
-          if (!_willPop) {
-            context.read<BetterVideoPlayerController>().onPlayerVisibilityChanged(info.visibleFraction);
-          }
-        },
-        child: BetterVideoPlayerWithControls(
-          isFullScreen: widget.isFullScreen,
-        ),
+      child: BetterVideoPlayerWithControls(
+        isFullScreen: widget.isFullScreen,
       ),
     );
   }
