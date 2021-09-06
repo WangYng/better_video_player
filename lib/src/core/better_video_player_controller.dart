@@ -149,9 +149,11 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
 
   /// 暂停
   Future<void> pause() async {
-    if (value.videoPlayerController == null || value.videoPlayerController?.value.isInitialized == false) { // 还在初始化中, 关闭自动播放
+    if (value.configuration.autoPlay) { // 可能还在初始化中, 需要关闭自动播放
       value = value.copyWith(configuration: value.configuration.copyWith(autoPlay: false));
-    } else {
+    }
+
+    if (value.videoPlayerController?.value.isInitialized == true) {
       await value.videoPlayerController?.pause();
     }
   }
