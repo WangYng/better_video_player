@@ -10,7 +10,7 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
   bool _wasPlayingBeforePause = false;
 
   BetterVideoPlayerController.configuration(BetterVideoPlayerConfiguration betterPlayerConfiguration)
-      : super(BetterVideoPlayerValue(configuration: betterPlayerConfiguration));
+      : super(BetterVideoPlayerValue(playerKey: UniqueKey(), configuration: betterPlayerConfiguration));
 
   BetterVideoPlayerController.copy(BetterVideoPlayerController betterVideoPlayerController)
       : super(betterVideoPlayerController.value.copyWith());
@@ -225,6 +225,9 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
 }
 
 class BetterVideoPlayerValue {
+
+  final Key playerKey;
+
   // 当前页面显示状态, 0 是隐藏, 1 是显示, 其它为中间状态
   final double visibilityFraction;
 
@@ -250,6 +253,7 @@ class BetterVideoPlayerValue {
   final VoidCallback? exitFullScreenCallback;
 
   BetterVideoPlayerValue({
+    required this.playerKey,
     this.visibilityFraction = 1,
     this.isLoading = true,
     this.isVideoFinish = false,
@@ -261,6 +265,7 @@ class BetterVideoPlayerValue {
   });
 
   BetterVideoPlayerValue copyWith({
+    Key? playerKey,
     double? visibilityFraction,
     bool? isLoading,
     bool? isPauseFromUser,
@@ -272,6 +277,7 @@ class BetterVideoPlayerValue {
     VoidCallback? exitFullScreenCallback,
   }) {
     return BetterVideoPlayerValue(
+      playerKey: playerKey ?? this.playerKey,
       visibilityFraction: visibilityFraction ?? this.visibilityFraction,
       isLoading: isLoading ?? this.isLoading,
       isVideoFinish: isVideoFinish ?? this.isVideoFinish,

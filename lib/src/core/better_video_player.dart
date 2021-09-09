@@ -110,10 +110,9 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
 
   @override
   Widget build(BuildContext context) {
-    String? url = widget.dataSource?.url;
-    url = url ?? context.read<BetterVideoPlayerController>().value.videoPlayerController!.dataSource;
+    final playerKey = context.read<BetterVideoPlayerController>().value.playerKey;
     return VisibilityDetector(
-      key: Key(url),
+      key: playerKey,
       onVisibilityChanged: (VisibilityInfo info) {
         // 这个框架在回调时有一个延迟, 目的是为了去重, 防止连续多次回调,
         // 相同的key如果连续多次触发, 只会返回最后一次
