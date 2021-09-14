@@ -50,3 +50,5 @@ fix some bug.
 fix some bug.
 ## 1.1.5
 fix some bug.
+## 1.1.6
+fix some bug.
