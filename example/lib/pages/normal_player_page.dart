@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:better_video_player/better_video_player.dart';
 import 'package:better_video_player_example/constants.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ class NormalPlayerPage extends StatefulWidget {
 class _NormalPlayerPageState extends State<NormalPlayerPage> {
 
   late final BetterVideoPlayerController controller;
+  late StreamSubscription playerEventSubscription;
 
   @override
   void initState() {
@@ -23,11 +26,16 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
         ),
       ),
     );
+
+    playerEventSubscription = controller.playerEventStream.listen((event) {
+      print("wang $event");
+    });
   }
 
   @override
   void dispose() {
     controller.dispose();
+    playerEventSubscription.cancel();
 
     super.dispose();
   }

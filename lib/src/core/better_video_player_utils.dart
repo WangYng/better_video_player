@@ -34,8 +34,8 @@ class BetterVideoPlayerUtils {
   }
 
   static bool isVideoFinished(VideoPlayerValue? value) {
-    if (value == null) {
-      return true;
+    if (value == null || value.duration == Duration.zero) {
+      return false;
     }
 
     return value.position >= value.duration;
