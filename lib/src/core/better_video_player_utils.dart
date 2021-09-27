@@ -34,7 +34,8 @@ class BetterVideoPlayerUtils {
   }
 
   static bool isVideoFinished(VideoPlayerValue? value) {
-    if (value == null || value.duration <= Duration.zero) {
+    // on iOS 12.4.1, video duration is 0 -> https://github.com/flutter/flutter/issues/87334
+    if (value == null || value.duration <= Duration(milliseconds: 1)) {
       return false;
     }
 

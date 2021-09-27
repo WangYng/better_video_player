@@ -54,3 +54,6 @@ fix some bug.
 fix some bug.
 ## 1.1.7
 fix some bug.
+## 1.1.8
+fix some bug.
+
