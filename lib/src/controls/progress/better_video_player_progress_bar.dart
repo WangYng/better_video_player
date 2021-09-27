@@ -64,18 +64,11 @@ class _VideoProgressBarState extends State<BetterVideoPlayerProgressBar> {
       onTapDown: (TapDownDetails details) {
         seekToRelativePosition(details.globalPosition);
       },
-      child: Center(
-        child: Container(
-          height: MediaQuery.of(context).size.height / 2,
-          width: MediaQuery.of(context).size.width,
-          color: Colors.transparent,
-          child: CustomPaint(
-            painter: _ProgressBarPainter(
-              videoPlayerValue,
-              widget.colors,
-              widget.height,
-            ),
-          ),
+      child: CustomPaint(
+        painter: _ProgressBarPainter(
+          videoPlayerValue,
+          widget.colors,
+          widget.height,
         ),
       ),
     );
