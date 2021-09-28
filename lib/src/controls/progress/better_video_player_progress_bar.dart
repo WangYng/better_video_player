@@ -44,6 +44,7 @@ class _VideoProgressBarState extends State<BetterVideoPlayerProgressBar> {
     }
 
     return GestureDetector(
+      behavior: HitTestBehavior.translucent,
       onHorizontalDragStart: (DragStartDetails details) {
         context.read<BetterVideoPlayerController>().onProgressDragStart();
 
@@ -64,11 +65,14 @@ class _VideoProgressBarState extends State<BetterVideoPlayerProgressBar> {
       onTapDown: (TapDownDetails details) {
         seekToRelativePosition(details.globalPosition);
       },
-      child: CustomPaint(
-        painter: _ProgressBarPainter(
-          videoPlayerValue,
-          widget.colors,
-          widget.height,
+      child: Container(
+        constraints: BoxConstraints.expand(),
+        child: CustomPaint(
+          painter: _ProgressBarPainter(
+            videoPlayerValue,
+            widget.colors,
+            widget.height,
+          ),
         ),
       ),
     );
