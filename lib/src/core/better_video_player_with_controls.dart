@@ -25,10 +25,6 @@ class _BetterVideoPlayerWithControlsState extends State<BetterVideoPlayerWithCon
         clipBehavior: Clip.hardEdge,
         fit: StackFit.expand,
         children: <Widget>[
-          Offstage(
-            offstage: controller.value.videoPlayerController?.value.isInitialized ?? false,
-            child: controller.value.configuration.placeholder,
-          ),
           Center(
             child: ClipRRect(
               child: AspectRatio(
@@ -39,6 +35,11 @@ class _BetterVideoPlayerWithControlsState extends State<BetterVideoPlayerWithCon
                     : const SizedBox(),
               ),
             ),
+          ),
+          Offstage(
+            offstage: (controller.videoPlayerValue?.isInitialized ?? false) &&
+                (controller.videoPlayerValue?.position ?? Duration.zero) > Duration.zero,
+            child: controller.value.configuration.placeholder,
           ),
           if (widget.isFullScreen)
             controller.value.configuration.fullScreenControls

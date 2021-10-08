@@ -29,6 +29,9 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
   // emit player event
   Stream<BetterVideoPlayerEvent> get playerEventStream => value.playerEventStreamController.stream;
 
+  // video player value
+  VideoPlayerValue? get videoPlayerValue => value.videoPlayerController?.value;
+
   Future<VoidCallback> attachVideoPlayerController(VideoPlayerController videoPlayerController) async {
     value = value.copyWith(videoPlayerController: videoPlayerController);
 
@@ -51,7 +54,6 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
   Future<void> start() async {
     // 开始自动播放
     if (value.configuration.autoPlay) {
-      _wasPlayingBeforePause = true;
       if (value.visibilityFraction > 0) {
         play();
       }
@@ -227,6 +229,7 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
         }
       } else {
         if (_wasPlayingBeforePause && value.configuration.autoPlayWhenResume) {
+          _wasPlayingBeforePause = false;
           await play();
         }
 
@@ -251,6 +254,7 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
 
   void onProgressDragEnd() async {
     if (_wasPlayingBeforePause && value.videoPlayerController?.value.isInitialized == true) {
+      _wasPlayingBeforePause = false;
       // except seek to end.
       final duration = value.videoPlayerController?.value.duration ?? Duration.zero;
       final position = value.videoPlayerController?.value.position ?? Duration.zero;

@@ -1,5 +1,6 @@
 
 import 'package:better_video_player_example/pages/custom_player_page.dart';
+import 'package:better_video_player_example/pages/list_player_page.dart';
 import 'package:better_video_player_example/pages/normal_player_page.dart';
 import 'package:better_video_player_example/pages/portrait_player_page.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,9 @@ class _WelcomePageState extends State<WelcomePage> {
       }),
       _buildExampleElementWidget("Portrait player", () {
         _navigateToPage(PortraitPlayerPage());
+      }),
+      _buildExampleElementWidget("List player", () {
+        _navigateToPage(ListPlayerPage());
       }),
     ];
   }
