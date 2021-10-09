@@ -10,22 +10,12 @@ class NormalPlayerPage extends StatefulWidget {
 }
 
 class _NormalPlayerPageState extends State<NormalPlayerPage> {
-
-  late final BetterVideoPlayerController controller;
+  final BetterVideoPlayerController controller  = BetterVideoPlayerController();
   late StreamSubscription playerEventSubscription;
 
   @override
   void initState() {
     super.initState();
-
-    controller = BetterVideoPlayerController.configuration(
-      BetterVideoPlayerConfiguration(
-        placeholder: Image.network(
-          kTestVideoThumbnail,
-          fit: BoxFit.contain,
-        ),
-      ),
-    );
 
     playerEventSubscription = controller.playerEventStream.listen((event) {
       print("wang $event");
@@ -61,6 +51,12 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
               aspectRatio: 16.0 / 9.0,
               child: BetterVideoPlayer(
                 controller: controller,
+                configuration: BetterVideoPlayerConfiguration(
+                  placeholder: Image.network(
+                    kTestVideoThumbnail,
+                    fit: BoxFit.contain,
+                  ),
+                ),
                 dataSource: BetterVideoPlayerDataSource(
                   BetterVideoPlayerDataSourceType.network,
                   kTestVideoUrl,

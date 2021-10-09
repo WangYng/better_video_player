@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:better_video_player/src/configuration/better_video_data_source.dart';
 import 'package:better_video_player/src/configuration/better_video_data_source_type.dart';
+import 'package:better_video_player/src/configuration/better_video_player_configuration.dart';
 import 'package:better_video_player/src/core/better_video_player_with_controls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,8 @@ import 'better_video_player_controller.dart';
 class BetterVideoPlayer extends StatelessWidget {
   final BetterVideoPlayerController controller;
 
+  final BetterVideoPlayerConfiguration configuration;
+
   final BetterVideoPlayerDataSource? dataSource;
 
   final bool isFullScreen;
@@ -26,15 +29,17 @@ class BetterVideoPlayer extends StatelessWidget {
   const BetterVideoPlayer({
     Key? key,
     required this.controller,
+    required this.configuration,
     this.dataSource,
     this.isFullScreen = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<BetterVideoPlayerController>(
-      create: (_) => controller,
+    return ChangeNotifierProvider<BetterVideoPlayerController>.value(
+      value: controller,
       child: _BetterVideoPlayer(
+        configuration: configuration,
         dataSource: dataSource,
         isFullScreen: isFullScreen,
       ),
@@ -43,12 +48,15 @@ class BetterVideoPlayer extends StatelessWidget {
 }
 
 class _BetterVideoPlayer extends StatefulWidget {
+  final BetterVideoPlayerConfiguration configuration;
+
   /// 数据源, 如果有数据源, 使用数据源创建播放控制器
   final BetterVideoPlayerDataSource? dataSource;
 
   final bool isFullScreen;
 
-  const _BetterVideoPlayer({Key? key, this.dataSource, required this.isFullScreen}) : super(key: key);
+  const _BetterVideoPlayer({Key? key, required this.configuration, this.dataSource, required this.isFullScreen})
+      : super(key: key);
 
   @override
   BetterVideoPlayerState createState() {
@@ -58,10 +66,6 @@ class _BetterVideoPlayer extends StatefulWidget {
 
 class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindingObserver {
   late BetterVideoPlayerController betterVideoPlayerController;
-  VideoPlayerController? videoPlayerController;
-  VoidCallback? videoPlayerListener;
-
-  bool _isFullScreenMode = false;
 
   bool _willPop = false;
 
@@ -70,14 +74,25 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
     super.initState();
 
     betterVideoPlayerController = context.read<BetterVideoPlayerController>();
-    _isFullScreenMode = betterVideoPlayerController.value.isFullScreenMode;
 
     Future.delayed(Duration.zero, () async {
-      // 绑定事件
-      context.read<BetterVideoPlayerController>().value =
-          context.read<BetterVideoPlayerController>().value.copyWith(exitFullScreenCallback: _onExitFullScreen);
+      final controller = context.read<BetterVideoPlayerController>();
 
-      if (widget.dataSource != null) {
+      // 绑定事件
+      controller.value =
+          controller.value.copyWith(exitFullScreenCallback: _onExitFullScreen, configuration: widget.configuration);
+
+      VideoPlayerController? videoPlayerController;
+
+      if (context.read<BetterVideoPlayerController>().value.videoPlayerController != null) {
+        videoPlayerController = context.read<BetterVideoPlayerController>().value.videoPlayerController!;
+
+        // 绑定播放控制器
+        controller.attachVideoPlayerController(videoPlayerController: videoPlayerController);
+
+        await controller.start();
+
+      } else if (widget.dataSource != null) {
         // 初始化播放器
         switch (widget.dataSource!.type) {
           case BetterVideoPlayerDataSourceType.network:
@@ -91,22 +106,18 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
 
         try {
           // 创建后必须要初始化才能使用
-          await videoPlayerController!.initialize();
+          await videoPlayerController.initialize();
         } catch (e) {
-          videoPlayerController!.value = videoPlayerController!.value.copyWith(errorDescription: e.toString());
+          videoPlayerController.value = videoPlayerController.value.copyWith(errorDescription: e.toString());
         }
 
         // 绑定播放控制器
-        videoPlayerListener = await context.read<BetterVideoPlayerController>().attachVideoPlayerController(videoPlayerController!);
-      } else {
-        videoPlayerController = context.read<BetterVideoPlayerController>().value.videoPlayerController!;
-
-        // 绑定播放控制器
-        videoPlayerListener = await context.read<BetterVideoPlayerController>().attachVideoPlayerController(videoPlayerController!);
+        controller.attachVideoPlayerController(videoPlayerController: videoPlayerController);
+        await controller.start();
       }
 
       // 绑定事件
-      context.read<BetterVideoPlayerController>().value = context.read<BetterVideoPlayerController>().value.copyWith(enterFullScreenCallback: _onEnterFullScreen);
+      controller.value = controller.value.copyWith(enterFullScreenCallback: _onEnterFullScreen);
     });
   }
 
@@ -136,24 +147,21 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
       _willPop = true;
     }
 
-    if (videoPlayerListener != null) {
-      videoPlayerController?.removeListener(videoPlayerListener!);
-    }
-
-    if (_isFullScreenMode == false) {
-      videoPlayerController?.dispose();
-    }
-
-    videoPlayerController = null;
+    betterVideoPlayerController.detachVideoPlayerController();
 
     super.dispose();
   }
 
   void _onEnterFullScreen() async {
+    bool allowedScreenSleep = context.read<BetterVideoPlayerController>().value.configuration.allowedScreenSleep;
+    final aspectRatio = context.read<BetterVideoPlayerController>().videoPlayerValue?.aspectRatio ?? 1.0;
+
+    // 进入全屏页面
+    final pushResult = _pushFullScreenPage();
+
+    // 全屏旋转
     await SystemChrome.setEnabledSystemUIOverlays([]);
 
-    final aspectRatio =
-        context.read<BetterVideoPlayerController>().value.videoPlayerController?.value.aspectRatio ?? 1.0;
     List<DeviceOrientation> deviceOrientations;
     if (aspectRatio < 1.0) {
       deviceOrientations = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown];
@@ -170,51 +178,21 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
     }
     await SystemChrome.setPreferredOrientations(deviceOrientations);
 
-    final controller = context.read<BetterVideoPlayerController>();
-
     // 屏幕常亮
     bool closeWakelock = false;
-    if (!controller.value.configuration.allowedScreenSleep && !(await Wakelock.enabled)) {
+    if (!allowedScreenSleep && !(await Wakelock.enabled)) {
       await Wakelock.enable();
       closeWakelock = true;
     }
 
-    final fullScreenController = BetterVideoPlayerController.copy(controller);
-    var fullScreenConfiguration = fullScreenController.value.configuration;
-    final isPlaying = fullScreenController.value.videoPlayerController!.value.isPlaying;
+    await pushResult;
 
-    fullScreenConfiguration = fullScreenConfiguration.copyWith(autoPlay: isPlaying);
-    fullScreenController.value = fullScreenController.value.copyWith(configuration: fullScreenConfiguration);
-
-    if (videoPlayerListener != null) {
-      videoPlayerController?.removeListener(videoPlayerListener!);
-    }
-
-    await Navigator.of(context, rootNavigator: true).push(
-      CupertinoPageRoute<BetterVideoPlayer>(builder: (BuildContext context) {
-        return Scaffold(
-          backgroundColor: Colors.black,
-          body: SafeArea(
-            child: BetterVideoPlayer(
-              controller: fullScreenController,
-              isFullScreen: true,
-            ),
-          ),
-        );
-      }),
-    );
-
-    if (videoPlayerListener != null) {
-      videoPlayerController?.addListener(videoPlayerListener!);
-    }
-
-    // 需要延时, 因为页面关闭后不会立即释放provider
-    Future.delayed(Duration(milliseconds: 500), () => fullScreenController.dispose());
-
+    // 关闭屏幕常亮
     if (closeWakelock) {
       await Wakelock.disable();
     }
 
+    // 恢复全屏旋转
     await SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
 
     if (aspectRatio < 1.0) {
@@ -223,6 +201,55 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,
       ]);
+    }
+  }
+
+  Future _pushFullScreenPage() async {
+    try {
+      final controller = context.read<BetterVideoPlayerController>();
+
+      // 关闭视频播放器监听
+      controller.detachVideoPlayerController();
+
+      final fullScreenController = BetterVideoPlayerController.copy(controller);
+
+      var fullScreenConfiguration = fullScreenController.value.configuration;
+      final isPlaying = fullScreenController.value.videoPlayerController!.value.isPlaying;
+      fullScreenConfiguration = fullScreenConfiguration.copyWith(autoPlay: isPlaying);
+
+      fullScreenController.value = fullScreenController.value.copyWith(configuration: fullScreenConfiguration);
+
+      final result = Navigator.of(context, rootNavigator: true).push(
+        CupertinoPageRoute<BetterVideoPlayer>(builder: (BuildContext context) {
+          return Scaffold(
+            backgroundColor: Colors.black,
+            body: SafeArea(
+              child: BetterVideoPlayer(
+                configuration: fullScreenConfiguration,
+                controller: fullScreenController,
+                isFullScreen: true,
+              ),
+            ),
+          );
+        }),
+      ).then((value) {
+
+        // 需要延时, 因为页面关闭后不会立即释放provider
+        Future.delayed(Duration(milliseconds: 500), () {
+          fullScreenController.dispose();
+        });
+
+        if (_willPop == false) {
+          // 恢复视频播放器监听
+          context.read<BetterVideoPlayerController>().attachVideoPlayerController();
+        }
+
+        return value;
+      });
+
+      return result;
+    } catch (e) {
+      print("wang $e");
     }
   }
 

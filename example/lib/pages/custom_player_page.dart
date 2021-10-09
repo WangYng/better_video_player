@@ -17,16 +17,7 @@ class _CustomPlayerPageState extends State<CustomPlayerPage> {
   void initState() {
     super.initState();
 
-    controller = BetterVideoPlayerController.configuration(
-      BetterVideoPlayerConfiguration(
-        placeholder: Image.network(
-          kTestVideoThumbnail,
-          fit: BoxFit.contain,
-        ),
-        controls: _CustomControls(isFullScreen: false),
-        fullScreenControls: _CustomControls(isFullScreen: true),
-      ),
-    );
+    controller = BetterVideoPlayerController();
   }
 
   @override
@@ -57,6 +48,14 @@ class _CustomPlayerPageState extends State<CustomPlayerPage> {
               aspectRatio: 16.0 / 9.0,
               child: BetterVideoPlayer(
                 controller: controller,
+                configuration: BetterVideoPlayerConfiguration(
+                  placeholder: Image.network(
+                    kTestVideoThumbnail,
+                    fit: BoxFit.contain,
+                  ),
+                  controls: _CustomControls(isFullScreen: false),
+                  fullScreenControls: _CustomControls(isFullScreen: true),
+                ),
                 dataSource: BetterVideoPlayerDataSource(
                   BetterVideoPlayerDataSourceType.network,
                   kTestVideoUrl,

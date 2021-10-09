@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:better_video_player/better_video_player.dart';
 import 'package:better_video_player_example/constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ListPlayerPage extends StatefulWidget {
@@ -10,50 +11,143 @@ class ListPlayerPage extends StatefulWidget {
 }
 
 class _ListPlayerPageState extends State<ListPlayerPage> {
+  int _playingIndex = -1;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Normal player"),
+        title: Text("List player"),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              "100 video player.",
-              style: TextStyle(fontSize: 16),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(child: const SizedBox(height: 8)),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 100),
+              child: Text(
+                "100 video player in ListView.",
+                style: TextStyle(fontSize: 16),
+              ),
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemBuilder: (BuildContext context, int index) {
-                return AspectRatio(
-                  aspectRatio: 16.0 / 9.0,
-                  child: BetterVideoPlayer(
-                    controller: BetterVideoPlayerController.configuration(
-                      BetterVideoPlayerConfiguration(
-                        placeholder: Image.network(
-                          kTestVideoThumbnail,
-                          fit: BoxFit.contain,
-                        ),
-                        autoPlay: false,
-                        autoPlayWhenResume: false,
-                      ),
-                    ),
-                    dataSource: BetterVideoPlayerDataSource(
-                      BetterVideoPlayerDataSourceType.network,
-                      kTestVideoUrl,
-                    ),
-                  ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                return ItemWidget(
+                  index: index,
+                  playingIndex: _playingIndex,
+                  onPlayButtonPressed: () {
+                    setState(() {
+                      _playingIndex = index;
+                    });
+                  },
                 );
               },
-              itemCount: 100,
+              childCount: 100,
             ),
           ),
         ],
       ),
     );
   }
+}
+
+class ItemWidget extends StatefulWidget {
+  final int playingIndex;
+
+  final int index;
+
+  final VoidCallback onPlayButtonPressed;
+
+  const ItemWidget({Key? key, required this.playingIndex, required this.index, required this.onPlayButtonPressed})
+      : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return ItemWidgetState();
+  }
+}
+
+class ItemWidgetState extends State<ItemWidget> with AutomaticKeepAliveClientMixin {
+  BetterVideoPlayerController playerController = BetterVideoPlayerController();
+
+  @override
+  void dispose() {
+    playerController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant ItemWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.playingIndex == oldWidget.index && widget.playingIndex != widget.index) {
+      final oldPlayerController = playerController;
+      Future.delayed(Duration(milliseconds: 500), () {
+        oldPlayerController.dispose();
+      });
+      playerController = BetterVideoPlayerController();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20.0),
+      child: AspectRatio(
+        aspectRatio: 16.0 / 9.0,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // play button
+            if (widget.playingIndex != widget.index)
+              CupertinoButton(
+                padding: EdgeInsets.zero,
+                child: Container(
+                  constraints: BoxConstraints.expand(),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: NetworkImage(kTestVideoThumbnail)),
+                  ),
+                  alignment: Alignment.center,
+                  child: Container(
+                    constraints: BoxConstraints.tightFor(width: 60, height: 60),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black26,
+                    ),
+                    child: const Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 60,
+                    ),
+                  ),
+                ),
+                onPressed: widget.onPlayButtonPressed,
+              ),
+            // video player
+            if (widget.playingIndex == widget.index)
+              BetterVideoPlayer(
+                controller: playerController,
+                dataSource: BetterVideoPlayerDataSource(
+                  BetterVideoPlayerDataSourceType.network,
+                  kTestVideoUrl,
+                ),
+                configuration: BetterVideoPlayerConfiguration(
+                  placeholder: Image.network(
+                    kTestVideoThumbnail,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => widget.playingIndex == widget.index;
 }

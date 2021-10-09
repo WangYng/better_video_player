@@ -17,15 +17,7 @@ class _PortraitPlayerPageState extends State<PortraitPlayerPage> {
   void initState() {
     super.initState();
 
-    controller = BetterVideoPlayerController.configuration(
-      BetterVideoPlayerConfiguration(
-        placeholder: Image.network(
-          kPortraitVideoThumbnail,
-          fit: BoxFit.contain,
-        ),
-        controls: const _CustomVideoPlayerControls(),
-      ),
-    );
+    controller = BetterVideoPlayerController();
   }
 
   @override
@@ -43,6 +35,13 @@ class _PortraitPlayerPageState extends State<PortraitPlayerPage> {
       ),
       body: BetterVideoPlayer(
         controller: controller,
+        configuration: BetterVideoPlayerConfiguration(
+          placeholder: Image.network(
+            kPortraitVideoThumbnail,
+            fit: BoxFit.contain,
+          ),
+          controls: const _CustomVideoPlayerControls(),
+        ),
         dataSource: BetterVideoPlayerDataSource(
           BetterVideoPlayerDataSourceType.network,
           kPortraitVideoUrl,
