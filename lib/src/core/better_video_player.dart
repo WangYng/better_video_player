@@ -69,6 +69,8 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
 
   bool _willPop = false;
 
+  bool _fullScreen = false;
+
   @override
   void initState() {
     super.initState();
@@ -131,7 +133,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
         // 相同的key如果连续多次触发, 只会返回最后一次
         // 如果不同的页面使用相同的Key, 同样也会去重
         // 当dispose后会回调
-        if (!_willPop) {
+        if (!_willPop && !_fullScreen) {
           context.read<BetterVideoPlayerController>().onPlayerVisibilityChanged(info.visibleFraction);
         }
       },
@@ -154,6 +156,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
   }
 
   void _onEnterFullScreen() async {
+
     bool allowedScreenSleep = widget.configuration.allowedScreenSleep;
     final aspectRatio = context.read<BetterVideoPlayerController>().videoPlayerValue?.aspectRatio ?? 1.0;
 
@@ -186,7 +189,9 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
       closeWakelock = true;
     }
 
+    _fullScreen = true;
     await pushResult;
+    _fullScreen = false;
 
     // 关闭屏幕常亮
     if (closeWakelock) {

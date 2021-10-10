@@ -66,3 +66,5 @@ fix some bug.
 fix some bug.
 ## 1.2.3
 fix some bug.
+## 1.2.4
+fix some bug.
