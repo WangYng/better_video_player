@@ -161,7 +161,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
     final pushResult = _pushFullScreenPage();
 
     // 全屏旋转
-    await SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setEnabledSystemUIOverlays([]);
 
     List<DeviceOrientation> deviceOrientations;
     if (aspectRatio < 1.0) {
@@ -177,12 +177,12 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
         deviceOrientations = [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight];
       }
     }
-    await SystemChrome.setPreferredOrientations(deviceOrientations);
+    SystemChrome.setPreferredOrientations(deviceOrientations);
 
     // 屏幕常亮
     bool closeWakelock = false;
     if (!allowedScreenSleep && !(await Wakelock.enabled)) {
-      await Wakelock.enable();
+      Wakelock.enable();
       closeWakelock = true;
     }
 
@@ -190,15 +190,15 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
 
     // 关闭屏幕常亮
     if (closeWakelock) {
-      await Wakelock.disable();
+      Wakelock.disable();
     }
 
     // 恢复全屏旋转
-    await SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
 
     if (aspectRatio < 1.0) {
     } else {
-      await SystemChrome.setPreferredOrientations(const [
+      SystemChrome.setPreferredOrientations(const [
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,
       ]);
