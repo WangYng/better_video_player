@@ -102,16 +102,12 @@ class ItemWidgetState extends State<ItemWidget> with AutomaticKeepAliveClientMix
         child: Stack(
           fit: StackFit.expand,
           children: [
+            if (widget.playingIndex != widget.index) Image.network(kTestVideoThumbnail, fit: BoxFit.contain),
             // play button
             if (widget.playingIndex != widget.index)
-              CupertinoButton(
-                padding: EdgeInsets.zero,
-                child: Container(
-                  constraints: BoxConstraints.expand(),
-                  decoration: BoxDecoration(
-                    image: DecorationImage(image: NetworkImage(kTestVideoThumbnail)),
-                  ),
-                  alignment: Alignment.center,
+              Center(
+                child: CupertinoButton(
+                  padding: EdgeInsets.zero,
                   child: Container(
                     constraints: BoxConstraints.tightFor(width: 60, height: 60),
                     decoration: BoxDecoration(
@@ -124,8 +120,8 @@ class ItemWidgetState extends State<ItemWidget> with AutomaticKeepAliveClientMix
                       size: 60,
                     ),
                   ),
+                  onPressed: widget.onPlayButtonPressed,
                 ),
-                onPressed: widget.onPlayButtonPressed,
               ),
             // video player
             if (widget.playingIndex == widget.index)
@@ -136,10 +132,7 @@ class ItemWidgetState extends State<ItemWidget> with AutomaticKeepAliveClientMix
                   kTestVideoUrl,
                 ),
                 configuration: BetterVideoPlayerConfiguration(
-                  placeholder: Image.network(
-                    kTestVideoThumbnail,
-                    fit: BoxFit.contain,
-                  ),
+                  placeholder: Image.network(kTestVideoThumbnail, fit: BoxFit.contain),
                 ),
               ),
           ],

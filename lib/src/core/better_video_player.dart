@@ -137,6 +137,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
       },
       child: BetterVideoPlayerWithControls(
         isFullScreen: widget.isFullScreen,
+        configuration: widget.configuration,
       ),
     );
   }
@@ -153,7 +154,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
   }
 
   void _onEnterFullScreen() async {
-    bool allowedScreenSleep = context.read<BetterVideoPlayerController>().value.configuration.allowedScreenSleep;
+    bool allowedScreenSleep = widget.configuration.allowedScreenSleep;
     final aspectRatio = context.read<BetterVideoPlayerController>().videoPlayerValue?.aspectRatio ?? 1.0;
 
     // 进入全屏页面
@@ -213,7 +214,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
 
       final fullScreenController = BetterVideoPlayerController.copy(controller);
 
-      var fullScreenConfiguration = fullScreenController.value.configuration;
+      var fullScreenConfiguration = widget.configuration;
       final isPlaying = fullScreenController.value.videoPlayerController!.value.isPlaying;
       fullScreenConfiguration = fullScreenConfiguration.copyWith(autoPlay: isPlaying);
 

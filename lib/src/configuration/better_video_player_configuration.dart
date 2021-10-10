@@ -30,8 +30,7 @@ class BetterVideoPlayerConfiguration {
     this.allowedScreenSleep = false,
     this.autoPlayWhenResume = true,
     this.controls = const BetterVideoPlayerControls(isFullScreen: false),
-    this.fullScreenControls =
-        const BetterVideoPlayerControls(isFullScreen: true),
+    this.fullScreenControls = const BetterVideoPlayerControls(isFullScreen: true),
   });
 
   BetterVideoPlayerConfiguration copyWith({
