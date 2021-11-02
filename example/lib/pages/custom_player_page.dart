@@ -10,7 +10,6 @@ class CustomPlayerPage extends StatefulWidget {
 }
 
 class _CustomPlayerPageState extends State<CustomPlayerPage> {
-
   late final BetterVideoPlayerController controller;
 
   @override
@@ -276,5 +275,49 @@ class _CustomControlsState extends BetterVideoPlayerControlsState {
       );
     else
       return SizedBox();
+  }
+
+  /// 自定义
+  List<Widget> buildCustomWidgets(bool isHide) {
+    return [
+      AnimatedOpacity(
+        opacity: !isHide ? 1.0 : 0.0,
+        duration: Duration(milliseconds: 300),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: CupertinoButton(
+            onPressed: null,
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.black26,
+              ),
+              child: Icon(Icons.chevron_left, size: 26, color: Colors.white),
+            ),
+          ),
+        ),
+      ),
+      AnimatedOpacity(
+        opacity: !isHide ? 1.0 : 0.0,
+        duration: Duration(milliseconds: 300),
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: CupertinoButton(
+            onPressed: null,
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.black26,
+              ),
+              child: Icon(Icons.chevron_right, size: 26, color: Colors.white),
+            ),
+          ),
+        ),
+      ),
+    ];
   }
 }

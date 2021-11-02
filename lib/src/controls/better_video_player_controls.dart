@@ -67,6 +67,7 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
                 else
                   const SizedBox(),
                 buildBottomBar(),
+                ...buildCustomWidgets(_isHide),
               ],
             ),
           ),
@@ -307,6 +308,10 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
         onDragEnd: onDragEnd,
       ),
     );
+  }
+
+  List<Widget> buildCustomWidgets(bool isHide) {
+    return [];
   }
 
   void _onExpandCollapse() {

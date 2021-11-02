@@ -2,7 +2,7 @@
 
 Advanced video player based on video_player.
 
-<img src="doc/example.gif" border="0" />
+<img src="doc/example.gif"/>
 
 ## Install Started
 
@@ -10,7 +10,7 @@ Advanced video player based on video_player.
 
 ```yaml
 dependencies:
-  better_video_player: ^1.2.4
+  better_video_player: ^1.2.5
 ```
 
 2. Install it
