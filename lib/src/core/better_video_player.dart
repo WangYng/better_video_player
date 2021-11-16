@@ -104,6 +104,10 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
           case BetterVideoPlayerDataSourceType.file:
             videoPlayerController = VideoPlayerController.file(File(widget.dataSource!.url));
             break;
+
+          case BetterVideoPlayerDataSourceType.asset:
+            videoPlayerController = VideoPlayerController.asset(widget.dataSource!.url);
+            break;
         }
 
         try {
