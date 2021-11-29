@@ -72,3 +72,5 @@ fix some bug.
 add custom widgets.
 ## 1.2.6
 fix some bug.
+## 1.2.7
+fix some bug.

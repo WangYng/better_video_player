@@ -31,16 +31,34 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
   // video player value
   VideoPlayerValue? get videoPlayerValue => value.videoPlayerController?.value;
 
+  @override
+  set value(BetterVideoPlayerValue newValue) {
+    if (_dispose) {
+      return;
+    }
+    super.value = newValue;
+  }
+
   void attachVideoPlayerController({VideoPlayerController? videoPlayerController}) {
+    if (_dispose) {
+      return;
+    }
     value = value.copyWith(videoPlayerController: videoPlayerController);
     value.videoPlayerController?.addListener(_onVideoPlayerChanged);
   }
 
   void detachVideoPlayerController() {
+    if (_dispose) {
+      return;
+    }
     value.videoPlayerController?.removeListener(_onVideoPlayerChanged);
   }
 
   Future<void> start() async {
+    if (_dispose) {
+      return;
+    }
+
     // 检查错误
     if (videoPlayerValue?.hasError == true) {
       bool hasError = value.hasError;
@@ -110,6 +128,10 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
 
   /// 进入全屏
   void enterFullScreen() {
+    if (_dispose) {
+      return;
+    }
+
     if (value.enterFullScreenCallback != null) {
       value.enterFullScreenCallback!();
       _wasPlayingBeforePause = false;
@@ -118,6 +140,10 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
 
   /// 退出全屏
   void exitFullScreen() {
+    if (_dispose) {
+      return;
+    }
+
     if (value.exitFullScreenCallback != null) {
       value.exitFullScreenCallback!();
     }
@@ -125,6 +151,10 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
 
   /// 播放
   Future<void> play() async {
+    if (_dispose) {
+      return;
+    }
+
     if (videoPlayerValue?.isInitialized == true) {
       if (videoPlayerValue?.isPlaying ?? false) {
         return;
@@ -142,6 +172,10 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
 
   /// 重启播放器
   Future<void> restart() async {
+    if (_dispose) {
+      return;
+    }
+
     if (value.videoPlayerController != null && value.videoPlayerController!.value.hasError) {
       value.playerEventStreamController.sink
           .add(BetterVideoPlayerEvent(value.playerKey, BetterVideoPlayerEventType.onRestart));
@@ -181,11 +215,19 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
 
   /// 循环播放
   Future<void> setLooping(bool looping) async {
+    if (_dispose) {
+      return;
+    }
+
     await value.videoPlayerController?.setLooping(looping);
   }
 
   /// 暂停
   Future<void> pause() async {
+    if (_dispose) {
+      return;
+    }
+
     if (value.configuration.autoPlay) {
       // 可能还在初始化中, 需要关闭自动播放
       value = value.copyWith(configuration: value.configuration.copyWith(autoPlay: false));
@@ -201,6 +243,10 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
 
   /// 跳转
   Future<void> seekTo(Duration moment) async {
+    if (_dispose) {
+      return;
+    }
+
     if (videoPlayerValue?.isInitialized == true) {
       await value.videoPlayerController?.seekTo(moment);
     }
@@ -208,6 +254,10 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
 
   /// 音量
   Future<void> setVolume(double volume) async {
+    if (_dispose) {
+      return;
+    }
+
     if (videoPlayerValue?.isInitialized == true) {
       await value.videoPlayerController?.setVolume(volume);
 
@@ -217,6 +267,10 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
   }
 
   void onPlayerVisibilityChanged(double visibilityFraction) async {
+    if (_dispose) {
+      return;
+    }
+
     value = value.copyWith(visibilityFraction: visibilityFraction);
 
     if (value.videoPlayerController == null) {
@@ -241,6 +295,10 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
   }
 
   void onProgressDragStart() async {
+    if (_dispose) {
+      return;
+    }
+
     _wasPlayingBeforePause = videoPlayerValue?.isPlaying ?? false;
     if (_wasPlayingBeforePause) {
       await pause();
@@ -248,6 +306,10 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
   }
 
   void onProgressDragUpdate(double relative) async {
+    if (_dispose) {
+      return;
+    }
+
     if (videoPlayerValue?.isInitialized == true) {
       final Duration position = (videoPlayerValue?.duration ?? Duration.zero) * relative;
       await seekTo(position);
@@ -255,6 +317,10 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
   }
 
   void onProgressDragEnd() async {
+    if (_dispose) {
+      return;
+    }
+
     if (_wasPlayingBeforePause && videoPlayerValue?.isInitialized == true) {
       _wasPlayingBeforePause = false;
       // except seek to end.
