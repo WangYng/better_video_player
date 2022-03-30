@@ -35,10 +35,14 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
   Widget build(BuildContext context) {
     final controller = context.watch<BetterVideoPlayerController>();
 
+    final isInitialized = controller.value.videoPlayerController?.value.isInitialized ?? false;
     final isPlaying = controller.value.videoPlayerController?.value.isPlaying ?? false;
+
     if (isPlaying && isAlwaysShow()) {
+      // hide when video is playing
       scheduleMicrotask(() => show(duration: Duration(seconds: 3)));
-    } else if (!isPlaying && _isHide) {
+    } else if (isInitialized && !isPlaying && _isHide) {
+      // show when video is not playing
       scheduleMicrotask(() => show());
     }
 
