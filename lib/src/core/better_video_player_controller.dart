@@ -62,7 +62,7 @@ class BetterVideoPlayerController extends ValueNotifier<BetterVideoPlayerValue> 
     // 检查错误
     if (videoPlayerValue?.hasError == true) {
       bool hasError = value.hasError;
-      value = value.copyWith(hasError: videoPlayerValue?.hasError);
+      value = value.copyWith(hasError: videoPlayerValue?.hasError ?? false);
       if (hasError == false && value.hasError == true) {
         value.playerEventStreamController.sink
             .add(BetterVideoPlayerEvent(value.playerKey, BetterVideoPlayerEventType.onError));

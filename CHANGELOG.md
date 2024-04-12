@@ -76,3 +76,5 @@ fix some bug.
 fix some bug.
 ## 1.2.8
 fix some bug.
+## 1.2.9
+upgrade video player.

@@ -1,6 +1,6 @@
 name: better_video_player
 description: Advanced video player based on video_player.
-version: 1.2.8
+version: 1.2.9
 homepage: https://github.com/WangYng
 repository: https://github.com/WangYng/better_video_player
 
@@ -14,7 +14,7 @@ dependencies:
   cupertino_icons: any
   wakelock: any
   visibility_detector: any
-  video_player: ^2.1.13
+  video_player: ^2.4.2
   provider: any
   connectivity: any
 

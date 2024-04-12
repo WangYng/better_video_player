@@ -168,7 +168,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
     final pushResult = _pushFullScreenPage();
 
     // 全屏旋转
-    SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
     List<DeviceOrientation> deviceOrientations;
     if (aspectRatio < 1.0) {
@@ -203,7 +203,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
     }
 
     // 恢复全屏旋转
-    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
 
     if (aspectRatio < 1.0) {
     } else {
