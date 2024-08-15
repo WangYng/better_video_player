@@ -12,9 +12,9 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: any
-  wakelock: any
+  wakelock_plus: any
   visibility_detector: any
-  video_player: ^2.4.2
+  video_player: any
   provider: any
   connectivity: any
 
@@ -34,7 +34,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.wangyng.better_video_player
+        package: io.github.wangyng.better_video_player
         pluginClass: BetterVideoPlayerPlugin
       ios:
         pluginClass: BetterVideoPlayerPlugin

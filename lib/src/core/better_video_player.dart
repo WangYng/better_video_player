@@ -12,7 +12,7 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'better_video_player_controller.dart';
 
@@ -188,8 +188,8 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
 
     // 屏幕常亮
     bool closeWakelock = false;
-    if (!allowedScreenSleep && !(await Wakelock.enabled)) {
-      Wakelock.enable();
+    if (!allowedScreenSleep && !(await WakelockPlus.enabled)) {
+      WakelockPlus.enable();
       closeWakelock = true;
     }
 
@@ -199,7 +199,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
 
     // 关闭屏幕常亮
     if (closeWakelock) {
-      Wakelock.disable();
+      WakelockPlus.disable();
     }
 
     // 恢复全屏旋转
