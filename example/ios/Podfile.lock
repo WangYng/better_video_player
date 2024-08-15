@@ -5,18 +5,22 @@ PODS:
     - Flutter
     - Reachability
   - Flutter (1.0.0)
-  - Reachability (3.2)
-  - video_player (0.0.1):
+  - package_info_plus (0.4.5):
     - Flutter
-  - wakelock (0.0.1):
+  - Reachability (3.2)
+  - video_player_avfoundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - wakelock_plus (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - better_video_player (from `.symlinks/plugins/better_video_player/ios`)
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - Flutter (from `Flutter`)
-  - video_player (from `.symlinks/plugins/video_player/ios`)
-  - wakelock (from `.symlinks/plugins/wakelock/ios`)
+  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
+  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
+  - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
 
 SPEC REPOS:
   trunk:
@@ -29,19 +33,22 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/connectivity/ios"
   Flutter:
     :path: Flutter
-  video_player:
-    :path: ".symlinks/plugins/video_player/ios"
-  wakelock:
-    :path: ".symlinks/plugins/wakelock/ios"
+  package_info_plus:
+    :path: ".symlinks/plugins/package_info_plus/ios"
+  video_player_avfoundation:
+    :path: ".symlinks/plugins/video_player_avfoundation/darwin"
+  wakelock_plus:
+    :path: ".symlinks/plugins/wakelock_plus/ios"
 
 SPEC CHECKSUMS:
-  better_video_player: a201d38370c115406e5387da62458991ad6787b5
+  better_video_player: 6f950bff8427d21ef259d798f904a9bf618f321b
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
-  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  video_player: 9cc823b1d9da7e8427ee591e8438bfbcde500e6e
-  wakelock: b0843b2479edbf6504d8d262c2959446f35373aa
+  video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3
+  wakelock_plus: 78ec7c5b202cab7761af8e2b2b3d0671be6c4ae1
 
-PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+PODFILE CHECKSUM: 6e700dec67e6deac9b1c69bb14c49a2217a12d15
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.15.2

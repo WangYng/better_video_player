@@ -16,7 +16,6 @@ class MyApp extends StatelessWidget {
       title: 'Better',
       theme: ThemeData(
         primarySwatch: Colors.green,
-        accentColor: Colors.green,
       ),
       home: WelcomePage(),
     );
