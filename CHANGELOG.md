@@ -78,3 +78,5 @@ fix some bug.
 fix some bug.
 ## 1.2.9
 upgrade video player.
+## 1.3.0
+replace wakelock with wakelock_plus
