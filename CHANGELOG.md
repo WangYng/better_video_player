@@ -80,3 +80,5 @@ fix some bug.
 upgrade video player.
 ## 1.3.0
 replace wakelock with wakelock_plus
+## 1.3.1
+fix wakelock_plus error
