@@ -188,7 +188,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
 
     // 屏幕常亮
     bool closeWakelock = false;
-    if (!allowedScreenSleep && !(await WakelockPlus.enabled)) {
+    if (!allowedScreenSleep) {
       WakelockPlus.enable();
       closeWakelock = true;
     }
