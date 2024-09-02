@@ -82,3 +82,5 @@ upgrade video player.
 replace wakelock with wakelock_plus
 ## 1.3.1
 fix wakelock_plus error
+## 1.3.2
+minSdkVersion 16 to 19
