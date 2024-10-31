@@ -4,7 +4,7 @@ class BetterVideoPlayerDataSource {
   /// 数据类型
   final BetterVideoPlayerDataSourceType type;
 
-  /// url
+  /// 链接
   final String url;
 
   const BetterVideoPlayerDataSource(

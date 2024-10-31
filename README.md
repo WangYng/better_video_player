@@ -10,7 +10,7 @@ Advanced video player based on video_player.
 
 ```yaml
 dependencies:
-  better_video_player: ^1.3.2
+  better_video_player: ^1.4.0
 ```
 
 2. Install it
@@ -18,6 +18,7 @@ dependencies:
 ```bash
 $ flutter packages get
 ```
+
 
 ## Normal usage
 

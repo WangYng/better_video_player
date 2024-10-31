@@ -58,7 +58,7 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
             absorbing: absorbing || _isHide,
             child: Stack(
               children: [
-                if (controller.value.hasError ?? false) // 发生错误
+                if (controller.value.videoPlayerController?.value.hasError ?? false) // 发生错误
                   buildError(_onRestart)
                 else if (controller.value.isLoading) // 加载中
                   Center(child: buildLoading())

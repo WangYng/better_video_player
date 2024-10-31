@@ -4,9 +4,7 @@ import 'package:flutter/widgets.dart';
 enum BetterVideoPlayerEventType {
   onPlay,
   onPause,
-  onSetVolume,
   onPlayEnd,
-  onError,
   onRestart,
 }
 

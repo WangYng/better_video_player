@@ -84,3 +84,5 @@ replace wakelock with wakelock_plus
 fix wakelock_plus error
 ## 1.3.2
 minSdkVersion 16 to 19
+## 1.4.0
+dynamic update video url
